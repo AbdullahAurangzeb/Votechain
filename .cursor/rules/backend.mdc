@@ -1,0 +1,120 @@
+---
+description: VoteChain Node.js backend — Express MVC, Repository Pattern, JWT auth, MongoDB Atlas
+globs: backend/**/*
+alwaysApply: false
+---
+
+# VoteChain Backend Rules
+
+REST API at `backend/` serving Flutter mobile and React admin dashboard.
+
+## Stack
+
+- **Node.js** + **Express**
+- **MongoDB Atlas** (via Mongoose or native driver)
+- **JWT** authentication
+- **Repository Pattern** + **MVC**
+
+## Folder Structure
+
+```
+backend/
+├── src/
+│   ├── config/         # Environment, DB connection
+│   ├── controllers/    # Thin HTTP handlers
+│   ├── middleware/     # Auth, validation, error handling
+│   ├── models/         # Mongoose schemas
+│   ├── repositories/   # Data access layer
+│   ├── services/       # Business logic orchestration
+│   ├── routes/         # Express route definitions
+│   ├── utils/          # Helpers, response formatters
+│   └── validators/     # Request validation schemas
+```
+
+## Request Flow
+
+```
+Route  →  Validation Middleware  →  Auth Middleware  →  Controller  →  Service  →  Repository  →  MongoDB
+                                                                              ↓
+                                                                    Error Middleware
+```
+
+## Rules
+
+- **Async/await only** — no callback-style code.
+- **Validation middleware** on every mutating endpoint (body, params, query).
+- **Error middleware** returns consistent JSON error responses.
+- **Standard API responses** — every endpoint must return the same JSON structure (see below).
+- **Repository layer** — controllers and services never query MongoDB directly.
+- **Service layer** — business logic lives here, not in controllers.
+- **Controllers remain thin** — parse request, call service, return response.
+- **No duplicated logic** — extract shared code to services or utils.
+- **Environment variables only** — never hardcode secrets, URLs, or keys.
+
+## MongoDB Collections
+
+`Users`, `Elections`, `Candidates`, `Votes`, `Notifications`, `AuditLogs`
+
+- Use **ObjectId references** — never duplicate embedded documents.
+- Index frequently queried fields (userId, electionId, status).
+
+## Standard API Response Format
+
+Every endpoint — success or failure — must return this exact structure:
+
+```json
+{
+  "success": true,
+  "message": "Vote submitted successfully",
+  "data": {},
+  "errors": null
+}
+```
+
+```javascript
+// ✅ Success
+res.status(200).json({
+  success: true,
+  message: 'Vote submitted successfully',
+  data: { voteId: '...', txHash: '...' },
+  errors: null,
+});
+
+// ✅ Validation error
+res.status(400).json({
+  success: false,
+  message: 'Validation failed',
+  data: null,
+  errors: [{ field: 'candidateId', message: 'Candidate ID is required' }],
+});
+
+// ✅ Server error (via error middleware)
+res.status(500).json({
+  success: false,
+  message: 'Internal server error',
+  data: null,
+  errors: null,
+});
+```
+
+Use a shared response helper in `src/utils/response.js` — never construct ad-hoc response shapes.
+
+## Anti-Patterns
+
+```javascript
+// ❌ Direct DB query in controller
+const user = await User.findById(req.params.id);
+
+// ❌ Callback style
+User.findById(id, (err, user) => { ... });
+
+// ❌ Hardcoded secret
+const JWT_SECRET = 'my-secret-key';
+```
+
+## Security
+
+- Hash passwords with bcrypt — never store plaintext.
+- Validate JWT on all protected routes.
+- Log security events to `AuditLogs` collection.
+- Rate-limit auth and voting endpoints.

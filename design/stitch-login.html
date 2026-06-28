@@ -1,0 +1,232 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>VoteChain - Secure Login</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts: Poppins & Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "on-tertiary-fixed-variant": "#5a00c6",
+                  "inverse-on-surface": "#2a3040",
+                  "surface-variant": "#2f3445",
+                  "on-surface-variant": "#bdcaba",
+                  "on-primary-fixed-variant": "#005320",
+                  "primary-fixed": "#7ffc97",
+                  "on-error": "#690005",
+                  "on-primary-fixed": "#002109",
+                  "on-secondary-fixed-variant": "#003ea8",
+                  "tertiary": "#d2bbff",
+                  "background": "#0b1120",
+                  "on-background": "#dde2f8",
+                  "secondary-fixed": "#dbe1ff",
+                  "outline": "#879485",
+                  "secondary": "#b4c5ff",
+                  "secondary-fixed-dim": "#b4c5ff",
+                  "surface-bright": "#33394a",
+                  "surface-dim": "#0d1322",
+                  "primary": "#62df7d",
+                  "error": "#ffb4ab",
+                  "surface-tint": "#62df7d",
+                  "surface-container-low": "#151b2b",
+                  "on-tertiary-fixed": "#25005a",
+                  "surface-container-lowest": "#080e1d",
+                  "on-primary": "#003914",
+                  "inverse-primary": "#006e2d",
+                  "error-container": "#93000a",
+                  "secondary-container": "#0053db",
+                  "primary-container": "#1ca64d",
+                  "surface-container-highest": "#2f3445",
+                  "primary-fixed-dim": "#62df7d",
+                  "inverse-surface": "#dde2f8",
+                  "on-tertiary": "#3f008e",
+                  "on-primary-container": "#003111",
+                  "tertiary-fixed-dim": "#d2bbff",
+                  "tertiary-container": "#a476ff",
+                  "on-tertiary-container": "#36007d",
+                  "on-secondary-container": "#cdd7ff",
+                  "outline-variant": "#3e4a3d",
+                  "surface-container": "#191f2f",
+                  "tertiary-fixed": "#eaddff",
+                  "on-error-container": "#ffdad6",
+                  "surface": "#0d1322",
+                  "on-secondary": "#002a78",
+                  "surface-container-high": "#242a3a",
+                  "on-secondary-fixed": "#00174b",
+                  "on-surface": "#dde2f8"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "max-width": "1200px",
+                  "margin-mobile": "16px",
+                  "unit": "4px",
+                  "margin-desktop": "64px",
+                  "gutter": "24px"
+          },
+          "fontFamily": {
+                  "body-lg": ["Inter"],
+                  "headline-md": ["Poppins"],
+                  "label-lg": ["Inter"],
+                  "body-sm": ["Inter"],
+                  "headline-lg": ["Poppins"],
+                  "label-md": ["Inter"],
+                  "headline-sm": ["Poppins"],
+                  "headline-lg-mobile": ["Poppins"],
+                  "body-md": ["Inter"]
+          },
+          "fontSize": {
+                  "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                  "headline-md": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                  "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600"}],
+                  "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                  "headline-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                  "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}],
+                  "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                  "headline-lg-mobile": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                  "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-effect {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glow-primary:focus-within {
+      box-shadow: 0 0 15px rgba(98, 223, 125, 0.2);
+    }
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-x-hidden">
+<!-- Background Decorative Element -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full opacity-20">
+<img class="w-full h-full object-contain" data-alt="A highly detailed, low-opacity isometric digital illustration of a glowing blue and emerald blockchain network. The scene features interconnected nodes, cryptographic blocks, and circuit-like data paths flowing through a dark, deep navy digital void. The style is premium, secure, and modern, echoing a high-end fintech or national security interface with subtle neon luminosity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByK6JPHv2fmgKtu-vDwH5etDVc9oo2ZJJq6MLIp4P9fvugHTP0udDdA9EpfXYqNDIFaAIgnmu-flakRJETpLK5whykMCBJDvplibOeJtHIEIWoDnn0A1tzSi9fks8WATfA0S8jzRDum-B2O8GoBMXkOtGLTezy7bGi0_f1cAeUWk_Y_JuB-tm23LbXttsGFHAh3szGVoRInw-v_hlcS--cquNKDY1o4GSpLaCiMmHZx-KLM9sL8eqZV6ew3dGjJViMpRQuqtQ13vc">
+</div>
+</div>
+<main class="relative z-10 flex-grow flex flex-col items-center justify-center px-margin-mobile md:px-margin-desktop py-12">
+<!-- Login Card Container -->
+<div class="w-full max-w-[440px] flex flex-col items-center space-y-8">
+<!-- Top Section -->
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="w-24 h-24 mb-2 animate-float">
+<img alt="VoteChain Shield Logo" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLvpNfCVw05AEEt1nBiHfdOA2jRGw4hS-r3unUfvCjpyl7brODWJnOcnFAxUU6G09RrK15kiSAzjCdw9RlWi5LYv5UJ_NHhkC91lEHp8EHjeoVrY2J07NBxPaT9KerktAlBNpvL5QTmao4iz2XD6ubSN3lqwL_rZmdgZ7pjZmyj6jdqloUFL8T_TXoAZiECRROXmqptjSDi7CryW46Ta0tqbquRb7Zw9sZZo2uUfUSWMRaJ5TAh9OY0uJqI">
+</div>
+<div class="space-y-1">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface tracking-tight">
+            Welcome Back
+          </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[320px]">
+            Login to continue your secure voting journey.
+          </p>
+</div>
+</div>
+<!-- Form Section -->
+<form class="w-full space-y-6">
+<div class="space-y-4">
+<!-- Email / CNIC Field -->
+<div class="group">
+<label class="block font-label-lg text-label-lg text-on-surface-variant mb-2 ml-1" for="identifier">Email or CNIC</label>
+<div class="relative flex items-center bg-surface-container-low rounded-xl border border-outline-variant transition-all duration-300 focus-within:border-primary glow-primary overflow-hidden">
+<span class="material-symbols-outlined absolute left-4 text-on-surface-variant">id_card</span>
+<input class="w-full bg-transparent border-none py-4 pl-12 pr-4 text-on-surface focus:ring-0 placeholder:text-on-surface-variant/50 font-body-md" id="identifier" name="identifier" placeholder="Enter your credentials" type="text">
+</div>
+</div>
+<!-- Password Field -->
+<div class="group">
+<label class="block font-label-lg text-label-lg text-on-surface-variant mb-2 ml-1" for="password">Password</label>
+<div class="relative flex items-center bg-surface-container-low rounded-xl border border-outline-variant transition-all duration-300 focus-within:border-primary glow-primary overflow-hidden">
+<span class="material-symbols-outlined absolute left-4 text-on-surface-variant">lock</span>
+<input class="w-full bg-transparent border-none py-4 pl-12 pr-4 text-on-surface focus:ring-0 placeholder:text-on-surface-variant/50 font-body-md" id="password" name="password" placeholder="••••••••" type="password">
+<button class="absolute right-4 text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Options Row -->
+<div class="flex items-center justify-between px-1">
+<label class="flex items-center cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant bg-surface-container text-primary focus:ring-primary focus:ring-offset-background transition-all" type="checkbox">
+<span class="ml-3 font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface">Remember Me</span>
+</label>
+<a class="font-body-sm text-body-sm text-primary hover:underline transition-all" href="#">Forgot Password?</a>
+</div>
+<!-- Login Button -->
+<button class="w-full h-14 bg-primary-container text-on-primary-container font-label-lg text-label-lg rounded-xl flex items-center justify-center space-x-2 shadow-lg shadow-primary-container/20 hover:brightness-110 active:scale-[0.98] transition-all duration-150" type="submit">
+<span>Login</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</form>
+<!-- Secondary Section -->
+<div class="pt-2 text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+          Don't have an account? 
+          <a class="text-primary font-semibold hover:underline" href="#">Register</a>
+</p>
+</div>
+</div>
+</main>
+<!-- Footer Security Badge -->
+<footer class="relative z-10 py-8 flex flex-col items-center">
+<div class="flex items-center space-x-2 text-on-surface-variant/60">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<p class="font-label-md text-label-md tracking-wide">
+        Your data is encrypted and secured using blockchain technology.
+      </p>
+</div>
+</footer>
+<script>
+    // Lightweight atmospheric interaction
+    document.addEventListener('mousemove', (e) => {
+      const x = e.clientX / window.innerWidth;
+      const y = e.clientY / window.innerHeight;
+      
+      const glow = document.querySelector('.fixed.inset-0 img');
+      if(glow) {
+        glow.style.transform = `translate(${x * 10}px, ${y * 10}px)`;
+      }
+    });
+
+    // Form submission animation mock
+    const form = document.querySelector('form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      const originalContent = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<span class="material-symbols-outlined animate-spin">refresh</span><span>Securing Connection...</span>`;
+      
+      setTimeout(() => {
+        btn.innerHTML = `<span class="material-symbols-outlined">check_circle</span><span>Authenticated</span>`;
+        btn.classList.replace('bg-primary-container', 'bg-secondary-container');
+      }, 1500);
+    });
+  </script>
+</body></html>

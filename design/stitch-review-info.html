@@ -1,0 +1,259 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>VoteChain - Review Identity</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Poppins:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glow-emerald {
+            box-shadow: 0 0 20px rgba(98, 223, 125, 0.15);
+        }
+        .glass-card {
+            backdrop-filter: blur(12px);
+            background: rgba(25, 31, 47, 0.7);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed": "#002109",
+                      "surface-container-highest": "#2f3445",
+                      "on-secondary-fixed": "#00174b",
+                      "surface": "#0d1322",
+                      "surface-container-low": "#151b2b",
+                      "primary-fixed": "#7ffc97",
+                      "on-primary-container": "#003111",
+                      "on-error": "#690005",
+                      "surface-variant": "#2f3445",
+                      "primary-fixed-dim": "#62df7d",
+                      "error": "#ffb4ab",
+                      "background": "#0d1322",
+                      "on-tertiary-fixed": "#25005a",
+                      "inverse-primary": "#006e2d",
+                      "tertiary": "#d2bbff",
+                      "secondary-fixed-dim": "#b4c5ff",
+                      "on-secondary-container": "#cdd7ff",
+                      "error-container": "#93000a",
+                      "outline-variant": "#3e4a3d",
+                      "surface-container-lowest": "#080e1d",
+                      "surface-container-high": "#242a3a",
+                      "secondary-container": "#0053db",
+                      "on-secondary": "#002a78",
+                      "on-secondary-fixed-variant": "#003ea8",
+                      "secondary": "#b4c5ff",
+                      "on-tertiary-container": "#36007d",
+                      "tertiary-container": "#a476ff",
+                      "on-tertiary-fixed-variant": "#5a00c6",
+                      "tertiary-fixed": "#eaddff",
+                      "inverse-on-surface": "#2a3040",
+                      "on-primary": "#003914",
+                      "secondary-fixed": "#dbe1ff",
+                      "primary-container": "#1ca64d",
+                      "on-surface": "#dde2f8",
+                      "on-background": "#dde2f8",
+                      "outline": "#879485",
+                      "surface-bright": "#33394a",
+                      "tertiary-fixed-dim": "#d2bbff",
+                      "surface-tint": "#62df7d",
+                      "primary": "#62df7d",
+                      "on-tertiary": "#3f008e",
+                      "surface-dim": "#0d1322",
+                      "on-primary-fixed-variant": "#005320",
+                      "on-error-container": "#ffdad6",
+                      "on-surface-variant": "#bdcaba",
+                      "inverse-surface": "#dde2f8",
+                      "surface-container": "#191f2f"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "max-width": "1200px",
+                      "gutter": "24px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "64px"
+              },
+              "fontFamily": {
+                      "headline-sm": ["Poppins"],
+                      "body-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "headline-lg-mobile": ["Poppins"],
+                      "headline-md": ["Poppins"],
+                      "headline-lg": ["Poppins"]
+              },
+              "fontSize": {
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}],
+                      "headline-lg-mobile": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "headline-md": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                      "headline-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col items-center">
+<!-- Top AppBar Integration -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter max-w-max-width mx-auto bg-surface border-b border-white/10 h-16">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="shield">shield</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary">Digital Democracy</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-variant/50 p-2 rounded-full transition-colors" data-icon="account_balance_wallet">account_balance_wallet</button>
+</div>
+</header>
+<main class="mt-20 mb-28 w-full max-w-[600px] px-margin-mobile md:px-0 flex flex-col">
+<!-- Progress Stepper -->
+<div class="w-full pt-8 pb-10">
+<div class="flex justify-between items-center mb-4">
+<span class="font-label-md text-label-md text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">Step 2 of 4</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Identity Verification</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-1/2 h-full bg-primary glow-emerald"></div>
+</div>
+</div>
+<!-- Header Content -->
+<section class="mb-8">
+<h1 class="font-headline-md text-headline-md text-on-surface mb-2">Confirm Your Information</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Our AI extracted the following details from your CNIC. Please verify them against your physical document.</p>
+</section>
+<!-- Information Card -->
+<div class="glass-card border border-white/10 rounded-xl overflow-hidden shadow-2xl mb-6">
+<!-- Confidence Badge Section -->
+<div class="p-4 border-b border-white/5 flex justify-between items-center bg-surface-container/50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="verified">verified</span>
+<span class="font-label-lg text-label-lg">Document Analysis</span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-3 py-1 rounded-full border border-primary/20">
+<span class="font-label-md text-label-md text-on-surface-variant">OCR Confidence:</span>
+<span class="font-label-lg text-label-lg text-primary">99%</span>
+</div>
+</div>
+<!-- Field List -->
+<div class="p-6 space-y-6">
+<!-- Name -->
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="space-y-1">
+<label class="font-label-md text-label-md text-on-surface-variant block">Full Name</label>
+<span class="font-body-lg text-body-lg font-semibold">Johnathan Doe</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant opacity-40 group-hover:opacity-100 transition-opacity p-2 hover:bg-white/5 rounded-lg" data-icon="edit">edit</button>
+</div>
+<div class="h-px bg-white/5"></div>
+<!-- ID Number -->
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="space-y-1">
+<label class="font-label-md text-label-md text-on-surface-variant block">CNIC Number</label>
+<span class="font-body-lg text-body-lg font-semibold tracking-wider">42101-1234567-1</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant opacity-40 group-hover:opacity-100 transition-opacity p-2 hover:bg-white/5 rounded-lg" data-icon="edit">edit</button>
+</div>
+<div class="h-px bg-white/5"></div>
+<!-- Multi-Column Grid for Dates -->
+<div class="grid grid-cols-2 gap-x-8 gap-y-6">
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="space-y-1">
+<label class="font-label-md text-label-md text-on-surface-variant block">Date of Birth</label>
+<span class="font-body-md text-body-md font-medium">12 Jan 1990</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity text-sm" data-icon="edit">edit</button>
+</div>
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="space-y-1">
+<label class="font-label-md text-label-md text-on-surface-variant block">Gender</label>
+<span class="font-body-md text-body-md font-medium">Male</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity text-sm" data-icon="edit">edit</button>
+</div>
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="space-y-1">
+<label class="font-label-md text-label-md text-on-surface-variant block">Nationality</label>
+<span class="font-body-md text-body-md font-medium">Pakistan</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity text-sm" data-icon="edit">edit</button>
+</div>
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="space-y-1">
+<label class="font-label-md text-label-md text-on-surface-variant block">Issue Date</label>
+<span class="font-body-md text-body-md font-medium">15 Mar 2021</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity text-sm" data-icon="edit">edit</button>
+</div>
+</div>
+<div class="h-px bg-white/5"></div>
+<!-- Expiry Date -->
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="space-y-1">
+<label class="font-label-md text-label-md text-on-surface-variant block">Expiry Date</label>
+<span class="font-body-lg text-body-lg font-semibold text-primary">14 Mar 2031</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant opacity-40 group-hover:opacity-100 transition-opacity p-2 hover:bg-white/5 rounded-lg" data-icon="edit">edit</button>
+</div>
+</div>
+</div>
+<!-- Warning Note -->
+<div class="flex items-start gap-3 px-4 py-3 bg-surface-container-low rounded-lg border border-white/5 mb-10">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] mt-0.5" data-icon="info">info</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                If any information is incorrect, please edit before continuing. This data will be cryptographically hashed and linked to your biometric identity.
+            </p>
+</div>
+</main>
+<!-- Footer Action Bar -->
+<footer class="fixed bottom-0 left-0 w-full z-50 bg-surface-container/80 backdrop-blur-md border-t border-white/5 h-24 flex items-center justify-center">
+<div class="w-full max-w-[600px] px-margin-mobile flex items-center justify-between gap-6">
+<button class="flex items-center gap-2 text-on-surface-variant font-label-lg text-label-lg hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+                Back
+            </button>
+<button class="flex-1 max-w-[280px] bg-primary text-on-primary font-label-lg text-label-lg py-4 rounded-xl font-bold glow-emerald hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2">
+                Continue to Verification
+                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</footer>
+<!-- Background Decoration -->
+<div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+<div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px]"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-secondary-container/5 blur-[150px]"></div>
+</div>
+<script>
+        // Simple micro-interaction for button active states
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('opacity-80');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('opacity-80');
+            });
+        });
+    </script>
+</body></html>

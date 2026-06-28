@@ -1,0 +1,145 @@
+---
+description: VoteChain Flutter mobile app — Riverpod, Clean Architecture, Material 3, and Stitch UI fidelity
+globs: mobile/**/*.dart
+alwaysApply: false
+---
+
+# VoteChain Flutter Rules
+
+Mobile voter app at `mobile/`. Production-quality code only — no tutorial patterns.
+
+## Approved Stack
+
+- Flutter **Stable** (latest)
+- **Material 3**
+
+## Approved Flutter Packages
+
+Only these packages are permitted. **No additional package may be added without explicit approval.**
+
+| Package | Purpose |
+|---------|---------|
+| `flutter_riverpod` | State management |
+| `go_router` | Navigation |
+| `dio` | HTTP client |
+| `freezed` | Immutable models |
+| `json_annotation` | JSON serialization |
+| `cached_network_image` | Image caching |
+| `flutter_secure_storage` | Secure token storage |
+| `image_picker` | Gallery/camera image selection |
+| `camera` | Live camera capture |
+| `google_fonts` | Stitch typography |
+| `flutter_animate` | Subtle UI animations |
+
+No Bloc, Provider, GetX, or other state/navigation libraries.
+
+## Naming Convention
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| Folders | `snake_case` | `face_registration/` |
+| Files | `snake_case.dart` | `election_repository.dart` |
+| Widgets | PascalCase | `VoteChainButton` |
+| Controllers | PascalCase + `Controller` | `ElectionController` |
+| Repositories | PascalCase + `Repository` | `ElectionRepository` |
+| Models | PascalCase + `Model` | `ElectionModel` |
+| Enums | PascalCase | `VoteStatus` |
+
+## Folder Structure
+
+```
+mobile/lib/
+├── core/           # Constants, errors, base classes, extensions
+├── shared/         # Cross-feature models and helpers
+├── features/       # Feature modules (feature-first)
+├── services/       # API client, secure storage, biometrics
+├── routes/         # GoRouter configuration
+├── theme/          # Material 3 theme from Stitch designs
+└── widgets/        # Reusable UI components
+```
+
+Every feature under `features/<name>/`:
+
+```
+data/          # DTOs, data sources, repository implementations
+domain/        # Entities, repository interfaces, use cases
+presentation/  # Controllers (Notifiers), screens, feature widgets
+```
+
+## State Flow
+
+```
+Widget (ConsumerWidget)  →  Controller (Notifier)  →  Repository  →  Dio / Local Storage
+```
+
+- **Controllers** manage state and orchestrate use cases.
+- **Repositories** handle all data fetching and caching.
+- **Widgets** are presentation-only — watch providers, render UI.
+
+## Widget Rules
+
+- Prefer **StatelessWidget**; use **ConsumerWidget** when watching Riverpod state.
+- Never put business logic inside widgets.
+- Never call APIs directly from widgets — go through controllers → repositories.
+- Keep widgets small and reusable; extract to `widgets/` when used twice.
+- Never create massive StatefulWidgets.
+
+## Screen Implementation Rule
+
+Every Flutter screen **must reference the exported Google Stitch design** in `design/stitch-screens/` before implementation. Add a file-level comment: `// Stitch: <screen_name>.png`.
+
+**Implementation priority (in order):**
+
+1. Layout
+2. Spacing
+3. Typography
+4. Colors
+5. Icons
+6. Animations
+7. Business Logic
+
+Never redesign layouts unless explicitly instructed. Use theme tokens from `theme/` — no hardcoded colors, fonts, or spacing.
+
+## Example — Correct Pattern
+
+```dart
+// ✅ presentation/controllers/election_controller.dart
+@riverpod
+class ElectionController extends _$ElectionController {
+  @override
+  Future<List<Election>> build() => ref.read(electionRepositoryProvider).getActive();
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref.read(electionRepositoryProvider).getActive(),
+    );
+  }
+}
+
+// ✅ presentation/screens/election_list_screen.dart
+class ElectionListScreen extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final elections = ref.watch(electionControllerProvider);
+    return elections.when(
+      data: (list) => ElectionListView(elections: list),
+      loading: () => const VoteChainLoadingIndicator(),
+      error: (e, _) => VoteChainErrorView(message: e.toString()),
+    );
+  }
+}
+```
+
+## Anti-Patterns
+
+```dart
+// ❌ API call inside widget
+final response = await dio.get('/elections');
+
+// ❌ Business logic in build()
+if (user.votes.length > 0 && election.isActive) { /* ... */ }
+
+// ❌ New state library
+class MyCubit extends Cubit<MyState> { ... }
+```

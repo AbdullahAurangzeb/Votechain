@@ -1,0 +1,70 @@
+---
+description: VoteChain UI rules — exact Google Stitch fidelity across Flutter mobile and React admin dashboard
+globs: mobile/lib/**/*.dart,admin/**/*
+alwaysApply: false
+---
+
+# VoteChain UI Rules
+
+All UI must exactly match **Google Stitch designs** exported to `design/stitch-screens/`.
+
+## Golden Rule
+
+**Do not redesign any screen.** Implement what Stitch specifies — pixel-faithful, token-driven, component-based.
+
+## Design Tokens (Must Stay Consistent)
+
+| Token | Flutter (`mobile/lib/theme/`) | React (`admin/src/theme/`) |
+|-------|-------------------------------|----------------------------|
+| Colors | `ColorScheme` from Stitch palette | CSS variables / MUI theme |
+| Typography | `TextTheme` — no inline font overrides | Theme typography scale |
+| Icons | Material Symbols matching Stitch | Same icon set as Flutter |
+| Border Radius | `BorderRadius` constants in theme | Theme border-radius tokens |
+| Elevation | Material 3 elevation levels | MUI elevation / box-shadow tokens |
+| Spacing | 4dp / 8dp grid system | Same spacing scale (4px / 8px) |
+
+## Flutter UI
+
+- **Material 3 only** — no legacy Material 2 widgets.
+- Build screens by composing reusable widgets from `mobile/lib/widgets/`.
+- Map each Stitch screen to a feature presentation screen.
+- Keep animations **subtle** — use Material motion defaults, no flashy transitions.
+
+## React Admin UI
+
+- Match the same visual language as Flutter — shared color palette and spacing.
+- Extract shared patterns into reusable components under `admin/src/components/`.
+- Use the same naming conventions for equivalent UI elements across both apps.
+
+## Component Rules
+
+- Create **reusable components** — buttons, cards, input fields, status badges, avatars.
+- Never duplicate UI code across features — promote to `widgets/` or `components/`.
+- Reference Stitch screen filename when implementing: `// Stitch: login_screen.png`.
+
+## Anti-Patterns
+
+```dart
+// ❌ Hardcoded styling
+Container(
+  color: Color(0xFF1A73E8),
+  padding: EdgeInsets.all(13),
+  child: Text('Vote', style: TextStyle(fontSize: 17)),
+)
+
+// ✅ Theme-driven styling
+Container(
+  color: Theme.of(context).colorScheme.primary,
+  padding: EdgeInsets.all(AppSpacing.md),
+  child: Text('Vote', style: Theme.of(context).textTheme.titleMedium),
+)
+```
+
+## Before Implementing a Screen
+
+1. Open the corresponding Stitch export in `design/stitch-screens/`.
+2. Identify reusable components already built — reuse before creating new ones.
+3. Implement in this priority order: **Layout → Spacing → Typography → Colors → Icons → Animations → Business Logic**.
+4. Implement using theme tokens only.
+5. Do not add, remove, or rearrange UI elements unless explicitly requested.
+6. Add file comment: `// Stitch: <screen_name>.png`.

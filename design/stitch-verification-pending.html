@@ -1,0 +1,247 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Verification Pending | Secure Democracy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#a476ff",
+                        "on-surface": "#dde2f8",
+                        "surface-container-low": "#151b2b",
+                        "background": "#0d1322",
+                        "secondary-fixed": "#dbe1ff",
+                        "surface-dim": "#0d1322",
+                        "surface-container-lowest": "#080e1d",
+                        "on-tertiary-fixed": "#25005a",
+                        "tertiary-fixed-dim": "#d2bbff",
+                        "surface-container": "#191f2f",
+                        "on-background": "#dde2f8",
+                        "error": "#ffb4ab",
+                        "tertiary": "#d2bbff",
+                        "on-secondary-container": "#cdd7ff",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "inverse-primary": "#006e2d",
+                        "on-surface-variant": "#bdcaba",
+                        "on-secondary-fixed": "#00174b",
+                        "surface-variant": "#2f3445",
+                        "on-secondary": "#002a78",
+                        "surface-bright": "#33394a",
+                        "on-primary-fixed": "#002109",
+                        "on-error": "#690005",
+                        "surface-container-high": "#242a3a",
+                        "primary-container": "#1ca64d",
+                        "error-container": "#93000a",
+                        "surface": "#0d1322",
+                        "on-tertiary": "#3f008e",
+                        "secondary-container": "#0053db",
+                        "primary": "#62df7d",
+                        "tertiary-fixed": "#eaddff",
+                        "on-primary": "#003914",
+                        "on-tertiary-fixed-variant": "#5a00c6",
+                        "on-primary-container": "#003111",
+                        "secondary": "#b4c5ff",
+                        "outline-variant": "#3e4a3d",
+                        "surface-container-highest": "#2f3445",
+                        "on-primary-fixed-variant": "#005320",
+                        "inverse-on-surface": "#2a3040",
+                        "inverse-surface": "#dde2f8",
+                        "outline": "#879485",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "surface-tint": "#62df7d",
+                        "primary-fixed-dim": "#62df7d",
+                        "primary-fixed": "#7ffc97",
+                        "on-tertiary-container": "#36007d",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "max-width": "1200px",
+                        "unit": "4px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Poppins"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Poppins"],
+                        "headline-lg": ["Poppins"],
+                        "label-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Poppins"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-md": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "headline-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0d1322;
+            color: #dde2f8;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .timeline-track {
+            position: absolute;
+            left: 11px;
+            top: 24px;
+            bottom: 0;
+            width: 2px;
+            background-color: #2f3445;
+        }
+        .timeline-track-complete {
+            background-color: #62df7d;
+        }
+        .glass-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-surface h-16 flex items-center justify-center">
+<div class="flex items-center justify-between px-margin-mobile w-full max-w-max-width mx-auto">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">shield</span>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary">Secure Democracy</h1>
+</div>
+<div class="flex items-center hover:bg-surface-container-high transition-colors p-2 rounded-full cursor-pointer">
+<span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-margin-mobile max-w-[640px] mx-auto min-h-screen flex flex-col items-center">
+<!-- Hero Section -->
+<section class="w-full text-center mb-10">
+<div class="mb-8 flex justify-center">
+<img alt="Success illustration showing a secure shield and verified documents" class="w-64 h-64 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9z7_ZUb1Y_yzhIqVhBCIcrqpYiarkga-dnVjGvRYbBz78t4Y2wJe9ib9feRSbZy712NZ-upjJ4NdjUGJdRp5z0aApOTlST4LoaqdP8gAT7-9ApvI2BdNujaDdvjudcFXFDsHJk7jOqbWq-iGV-ITbPwXnrLZUjRJsQFhUTkBeyJZIUm4Pj2mNLv7TQsxxVc824qZCSju8UWHPn2rhtjas-RVFcjTg-GBlSi7Mr7wUgji1j4l_kIvN9yqK-dGue5EhSNqeQxsKxsA">
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile mb-3 text-on-surface">Verification Submitted Successfully</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md mx-auto">Your identity has been submitted for administrator approval.</p>
+</section>
+<!-- Status Card -->
+<div class="w-full glass-card rounded-xl p-6 mb-8">
+<div class="flex items-start gap-4 mb-6">
+<span class="material-symbols-outlined text-secondary text-3xl mt-1">info</span>
+<div>
+<p class="font-body-md text-body-md text-on-surface mb-3">Our administrator will review your identity documents before activating your account.</p>
+<div class="inline-flex items-center gap-2 bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant">
+<span class="font-label-md text-label-md text-on-surface-variant">Estimated Review Time:</span>
+<span class="font-label-md text-label-md font-bold text-primary">Within 24 Hours</span>
+</div>
+</div>
+</div>
+<!-- Progress Timeline -->
+<div class="space-y-6 relative ml-1">
+<!-- Step 1 -->
+<div class="relative pl-10 flex items-start">
+<div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-primary flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-on-primary text-sm" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<div class="timeline-track timeline-track-complete h-10"></div>
+<div>
+<p class="font-label-lg text-label-lg text-primary">Personal Information</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Completed</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="relative pl-10 flex items-start">
+<div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-primary flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-on-primary text-sm" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<div class="timeline-track timeline-track-complete h-10"></div>
+<div>
+<p class="font-label-lg text-label-lg text-primary">OCR Verification</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Completed</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative pl-10 flex items-start">
+<div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-primary flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-on-primary text-sm" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<div class="timeline-track h-10"></div>
+<div>
+<p class="font-label-lg text-label-lg text-primary">Face Registration</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Completed</p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="relative pl-10 flex items-start">
+<div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-surface-container-highest border-2 border-primary flex items-center justify-center z-10">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+</div>
+<div>
+<p class="font-label-lg text-label-lg text-on-surface">Waiting for Admin Approval</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Our agents are validating your data integrity</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="w-full flex flex-col gap-4">
+<button class="w-full py-4 border-2 border-secondary text-secondary font-label-lg text-label-lg rounded-xl hover:bg-secondary hover:text-on-secondary transition-all active:scale-[0.98] duration-200">
+                Return to Login
+            </button>
+<button class="w-full py-2 text-on-surface-variant font-label-lg text-label-lg hover:text-primary transition-colors flex items-center justify-center gap-1">
+                Contact Support
+                <span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+</main>
+<!-- Footer -->
+<footer class="fixed bottom-0 w-full bg-surface-container-lowest py-6 border-t border-white/5">
+<div class="max-w-max-width mx-auto px-margin-mobile flex flex-col items-center gap-2">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">lock</span>
+<p class="font-label-md text-label-md uppercase tracking-wider">End-to-End Encrypted</p>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-center opacity-80">
+                Your personal information remains encrypted and securely protected by sovereign ledger technology.
+            </p>
+</div>
+</footer>
+<!-- Micro-interaction script -->
+<script>
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-95');
+            });
+        });
+    </script>
+</body></html>

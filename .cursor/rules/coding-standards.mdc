@@ -1,0 +1,84 @@
+---
+description: VoteChain global coding standards — SOLID, DRY, KISS, naming conventions, and AI generation rules
+alwaysApply: true
+---
+
+# VoteChain Coding Standards
+
+Apply to every file in the monorepo: `mobile/`, `admin/`, `backend/`, `ai-service/`, `blockchain/`.
+
+## Principles
+
+- **SOLID** — single responsibility, open/closed, Liskov substitution, interface segregation, dependency inversion.
+- **DRY** — don't repeat yourself; extract shared logic immediately.
+- **KISS** — keep it simple; avoid premature abstraction.
+- **Clean Code** — readable, self-documenting, minimal comments on obvious code.
+
+## Naming
+
+- **Variables** — descriptive, camelCase (`activeElections`, `voteTxHash`).
+- **Classes** — PascalCase, noun-based (`ElectionRepository`, `VoteController`).
+- **Functions** — verb-first (`getActiveElections`, `submitVote`, `verifyFace`).
+- **Files** — match the primary export (`election_repository.dart`, `voteController.js`).
+
+### Flutter Naming (see `flutter.mdc` for full table)
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| Folders | `snake_case` | `face_registration/` |
+| Files | `snake_case.dart` | `election_repository.dart` |
+| Widgets | PascalCase | `VoteChainButton` |
+| Controllers | PascalCase + `Controller` | `ElectionController` |
+| Repositories | PascalCase + `Repository` | `ElectionRepository` |
+| Models | PascalCase + `Model` | `ElectionModel` |
+| Enums | PascalCase | `VoteStatus` |
+
+## File Responsibility
+
+- **One responsibility per file** — one class or one cohesive module per file.
+- **One feature, one folder** — features must remain independent and self-contained.
+- **No duplicate code** — if logic appears twice, extract it to `core/`, `shared/`, `utils/`, or `widgets/`.
+
+## Code Quality
+
+- Generate **production-quality code** — proper error handling, typed models, edge cases considered.
+- Never generate tutorial/demo code with placeholder comments like `// TODO: implement later` unless explicitly scaffolding.
+- Prefer **reusable components** over inline one-off implementations.
+- Keep functions small — if a function exceeds ~30 lines, consider splitting.
+
+## AI Behaviour — Before Generating Code
+
+1. **Read existing code** in the target module and its neighbours.
+2. **Read architecture** — review `architecture.mdc` and `docs/ARCHITECTURE.md`.
+3. **Read the related feature** — understand data/domain/presentation layers already in place.
+4. **Reuse components** — check `widgets/`, `components/`, `shared/`, `core/` before creating anything new.
+5. **Never duplicate code** — extract shared logic immediately.
+6. **Follow development order** — do not jump ahead to a later phase (see `architecture.mdc`).
+7. **If information is missing, ask questions before coding** — do not guess requirements or invent APIs.
+
+## Global AI Rules
+
+When generating any VoteChain code:
+
+1. **Respect the current architecture** — follow established patterns in the target module.
+2. **Never invent a new architecture** — no new libraries, folder structures, or patterns without explicit approval.
+3. **Never modify UI** unless explicitly requested — Stitch designs are the source of truth.
+4. **Explain important architectural decisions** when introducing non-obvious patterns.
+5. **Generate maintainable, scalable, production-ready code** — not prototypes.
+6. **Never hardcode secrets or URLs** — use `.env` and `.env.example` only.
+
+## Documentation
+
+- Add doc comments to every major class and public function.
+- Update `docs/API.md` when adding backend endpoints.
+- Update `docs/BLOCKCHAIN.md` when modifying smart contracts.
+- Keep `README.md` current when setup steps change.
+
+## Pre-Submit Checklist
+
+- [ ] Follows layer separation (presentation / domain / data)
+- [ ] No secrets or hardcoded URLs
+- [ ] No PII or biometrics on-chain
+- [ ] UI matches Stitch designs
+- [ ] Reused existing components where possible
+- [ ] Focused diff — no unrelated file changes

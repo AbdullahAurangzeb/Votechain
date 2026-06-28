@@ -1,0 +1,86 @@
+---
+description: VoteChain Ethereum smart contracts — Solidity, Ganache dev, Sepolia demo, on-chain data privacy
+globs: blockchain/**/*
+alwaysApply: false
+---
+
+# VoteChain Blockchain Rules
+
+Smart contracts at `blockchain/` for tamper-proof vote recording on Ethereum.
+
+## Stack
+
+- **Ethereum**
+- **Solidity** (^0.8.x)
+- **Ganache** — local development and unit testing
+- **Sepolia Testnet** — final demonstration and staging
+
+## Environments
+
+| Environment | Network | Purpose |
+|-------------|---------|---------|
+| Development | Ganache (local) | Contract development, Hardhat/Truffle tests |
+| Demo | Sepolia Testnet | Final year project demonstration |
+
+- Never deploy production secrets to Sepolia — use test wallets and test ETH only.
+
+## On-Chain Data Policy
+
+Smart contracts must **never** store:
+
+- Passwords
+- CNIC / national ID numbers
+- Facial data or biometric templates
+- Images (any format)
+- Emails, names, phone numbers, or addresses
+- Any other personally identifiable information
+
+Smart contracts may **only** store:
+
+- Election ID
+- Candidate ID
+- Hashed voter identifier (keccak256 — never raw identity)
+- Timestamp
+- Transaction status
+
+Also permitted: transaction references (tx hash, block number) and election contract addresses.
+
+All voter identity verification happens off-chain via the AI service and MongoDB. The backend relayer submits hashed payloads — contracts never receive raw voter data.
+
+## Contract Design
+
+- Keep smart contracts **modular** — separate ElectionFactory, Election, and VoteRecorder contracts.
+- **Optimize gas usage** — use mappings over arrays where possible, minimize storage writes.
+- **Document every contract** — NatSpec comments on all public/external functions.
+- Heavy validation (eligibility, duplicate vote checks) belongs **off-chain** in the backend; contracts verify cryptographic proofs only.
+
+## Folder Structure
+
+```
+blockchain/
+├── contracts/       # Solidity source files
+├── scripts/         # Deploy scripts (Ganache / Sepolia)
+├── test/            # Contract unit tests
+├── deployments/     # Deployment addresses per network
+└── hardhat.config.js
+```
+
+## Example — NatSpec Documentation
+
+```solidity
+/// @title VoteRecorder
+/// @notice Records hashed vote submissions for a VoteChain election
+/// @dev Only the authorized backend relayer can submit votes
+contract VoteRecorder {
+    /// @notice Submit a vote hash for an election
+    /// @param electionId The election identifier
+    /// @param voteHash Keccak256 hash of the off-chain vote payload
+    function recordVote(uint256 electionId, bytes32 voteHash) external { ... }
+}
+```
+
+## Integration
+
+- Backend submits transactions via a dedicated relayer wallet.
+- Store returned `txHash` in MongoDB `Votes` collection.
+- Flutter displays transaction confirmation using the stored hash — never exposes private keys.

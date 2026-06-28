@@ -1,0 +1,106 @@
+---
+description: VoteChain monorepo architecture — Clean Architecture, feature-first modules, and layer separation across all services
+alwaysApply: true
+---
+
+# VoteChain Architecture
+
+VoteChain is a secure blockchain-based e-voting platform following a **monorepo architecture**. Each application is developed independently while sharing documentation and design assets.
+
+## Project Structure
+
+```
+VoteChain/
+├── mobile/        → Flutter voter application
+├── admin/         → React admin dashboard
+├── backend/       → Express REST API
+├── ai-service/    → Python FastAPI (OCR, face, liveness)
+├── blockchain/    → Solidity smart contracts
+├── docs/          → Project documentation
+├── design/        → Google Stitch design exports
+└── .cursor/       → Cursor AI rules
+```
+
+| Service | Path | Stack |
+|---------|------|-------|
+| Mobile (Voters) | `mobile/` | Flutter, Riverpod, GoRouter |
+| Admin Dashboard | `admin/` | React.js |
+| Backend API | `backend/` | Node.js, Express, MongoDB Atlas |
+| AI Service | `ai-service/` | Python FastAPI, EasyOCR, DeepFace |
+| Smart Contracts | `blockchain/` | Solidity, Ganache, Sepolia |
+
+## Environment Variables
+
+Never hardcode:
+
+- API URLs
+- MongoDB URI
+- JWT Secret
+- RPC URLs
+- Wallet Private Keys
+- Cloudinary Keys
+
+Every project (`mobile/`, `admin/`, `backend/`, `ai-service/`, `blockchain/`) must contain a `.env.example` listing all required variable names (no values). All secrets remain inside `.env` files only — never committed.
+
+## Development Order
+
+Complete one phase before starting the next. **Never jump ahead.**
+
+| Phase | Scope |
+|-------|-------|
+| 1 | Flutter Setup |
+| 2 | Theme |
+| 3 | Authentication |
+| 4 | OCR |
+| 5 | Face Registration |
+| 6 | Dashboard |
+| 7 | Elections |
+| 8 | Voting |
+| 9 | Blockchain |
+| 10 | Admin |
+| 11 | Testing |
+| 12 | Deployment |
+
+Do not scaffold or implement a later phase while an earlier phase is incomplete.
+
+## Core Principles
+
+- **Feature-First Architecture** — organize by feature (auth, elections, voting), not by file type.
+- **Clean Architecture** — strict layer separation: `data/` → `domain/` → `presentation/`.
+- **Repository Pattern** — all data access goes through repositories; controllers/widgets never query sources directly.
+- **SOLID Principles** — single responsibility, open/closed, dependency inversion throughout.
+- **Separation of Concerns** — UI, business logic, data access, and infrastructure are never mixed.
+- **Dependency Injection** — inject dependencies via Riverpod providers (Flutter) or constructor injection (backend/AI).
+- **Modular Development** — each feature is self-contained and independently testable.
+
+## Layer Rules
+
+```
+Presentation  →  Domain  →  Data  →  External (API / DB / Chain / AI)
+```
+
+- **Never mix UI with business logic.**
+- **Keep every feature isolated** — no cross-feature imports except through `shared/` or `core/`.
+- **Build scalable, reusable modules** — extract shared logic into `core/`, `shared/`, or `widgets/`.
+
+## Service Communication
+
+```
+Flutter / React  →  Node.js Backend  →  MongoDB Atlas
+                          ↓
+                    AI Service (FastAPI)
+                          ↓
+                    Ethereum (Ganache / Sepolia)
+```
+
+- Mobile and admin communicate with backend via REST only.
+- Backend orchestrates AI verification and blockchain transactions.
+- AI service is stateless — no direct DB or chain access.
+- Blockchain stores vote records and tx hashes only — never PII.
+
+## Before Adding Code
+
+1. Read existing files in the target module first.
+2. Respect the current folder structure — never invent new top-level directories.
+3. Place new code in the correct layer and feature folder.
+4. Reuse existing providers, repositories, services, and widgets before creating new ones.

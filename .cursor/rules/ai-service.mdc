@@ -1,0 +1,122 @@
+---
+description: VoteChain Python AI service — FastAPI, EasyOCR, DeepFace, OpenCV for voter identity verification
+globs: ai-service/**/*
+alwaysApply: false
+---
+
+# VoteChain AI Service Rules
+
+Identity verification microservice at `ai-service/`. Called by the Node.js backend via HTTP — never directly by Flutter.
+
+## Stack
+
+- **Python FastAPI**
+- **EasyOCR** — CNIC/document text extraction
+- **DeepFace** — face recognition and matching
+- **OpenCV** — image preprocessing and liveness checks
+
+## Service Separation
+
+Each capability is an independent module — never combine in a single monolithic handler:
+
+```
+ai-service/
+├── app/
+│   ├── main.py              # FastAPI app entry point
+│   ├── routers/
+│   │   ├── ocr.py           # OCR endpoints
+│   │   ├── face.py          # Face recognition endpoints
+│   │   └── liveness.py      # Liveness detection endpoints
+│   ├── services/
+│   │   ├── ocr_service.py
+│   │   ├── face_service.py
+│   │   └── liveness_service.py
+│   ├── models/              # Pydantic request/response schemas
+│   └── utils/               # Image processing helpers
+```
+
+| Service | Responsibility |
+|---------|---------------|
+| **OCR Service** | Extract CNIC number and name from document images |
+| **Face Recognition Service** | Match live face against registered reference photo |
+| **Liveness Detection** | Detect spoofing (photos, screens, masks) |
+
+## Rules
+
+- Return **structured JSON responses** only — no HTML, no file downloads to client.
+- **No frontend logic** — this service has no UI concerns.
+- **No blockchain logic** — never interact with Ethereum directly.
+- **No database business logic** — backend persists results; AI service is stateless.
+- **Document every endpoint** — FastAPI auto-docs + docstrings on all route handlers.
+- Handle model loading errors gracefully with clear HTTP status codes.
+
+## Standard AI Response Format
+
+Every endpoint must return structured JSON in this shape. Use Pydantic response models — never return raw dicts or plain strings.
+
+```json
+{
+  "success": true,
+  "confidence": 99.2,
+  "data": {
+    "name": "",
+    "cnic": "",
+    "dob": ""
+  }
+}
+```
+
+```python
+# ✅ OCR success
+{
+    "success": True,
+    "confidence": 99.2,
+    "data": {
+        "name": "Ali Khan",
+        "cnic": "12345-1234567-1",
+        "dob": "1998-04-15"
+    }
+}
+
+# ✅ Face match success
+{
+    "success": True,
+    "confidence": 97.5,
+    "data": {
+        "matched": True,
+        "distance": 0.23
+    }
+}
+
+# ✅ Failure
+{
+    "success": False,
+    "confidence": 42.1,
+    "data": {
+        "matched": False,
+        "reason": "FACE_MISMATCH"
+    }
+}
+```
+
+Define one Pydantic `BaseResponse` schema in `app/models/responses.py` and extend per endpoint.
+
+## Security
+
+- Accept images via multipart upload — validate file type and size before processing.
+- Never log or persist raw biometric images — process in memory, return results, discard.
+- Do not expose model internals or file paths in error messages.
+
+## Anti-Patterns
+
+```python
+# ❌ Mixing OCR and face logic in one endpoint
+@router.post("/verify")
+async def verify(file: UploadFile):
+    ocr_result = easyocr_reader.read(file)  # mixed concerns
+    face_result = deepface.verify(file)     # mixed concerns
+
+# ❌ Direct MongoDB access
+from pymongo import MongoClient
+db.users.insert_one({...})
+```

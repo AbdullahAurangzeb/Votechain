@@ -1,0 +1,14 @@
+/// Remote illustration URLs from Google Stitch auth screens.
+abstract final class AuthAssets {
+  static const String splashHero =
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuBX4HrlI0b6Cq8MCPGefetrCvsSZA5gmlWV_LZDWcFQw8bd-HE90Edmk6DxGZppgon91vRhN9GrYr_sqZGuJ6rrtGMjbNio6JejIXCYdxdn6EbdPdVI3J9PbDeaC4YxpnHdL8M3IOlOdONdC6gOJfn_Qf0V4yGW9Q7FmYO49SMTlkvCqMqI76VdLlAWCP08byu1sEj4GlYaYAs_0wZsvs7fWr_uKIqgpeb_lN8UQsFXh__tuRnX6denJ5HKE2L8RiVLORR_Y3rFrK4';
+
+  static const String loginLogo =
+      'https://lh3.googleusercontent.com/aida/AP1WRLvpNfCVw05AEEt1nBiHfdOA2jRGw4hS-r3unUfvCjpyl7brODWJnOcnFAxUU6G09RrK15kiSAzjCdw9RlWi5LYv5UJ_NHhkC91lEHp8EHjeoVrY2J07NBxPaT9KerktAlBNpvL5QTmao4iz2XD6ubSN3lqwL_rZmdgZ7pjZmyj6jdqloUFL8T_TXoAZiECRROXmqptjSDi7CryW46Ta0tqbquRb7Zw9sZZo2uUfUSWMRaJ5TAh9OY0uJqI';
+
+  static const String loginBackground =
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuByK6JPHv2fmgKtu-vDwH5etDVc9oo2ZJJq6MLIp4P9fvugHTP0udDdA9EpfXYqNDIFaAIgnmu-flakRJETpLK5whykMCBJDvplibOeJtHIEIWoDnn0A1tzSi9fks8WATfA0S8jzRDum-B2O8GoBMXkOtGLTezy7bGi0_f1cAeUWk_Y_JuB-tm23LbXttsGFHAh3szGVoRInw-v_hlcS--cquNKDY1o4GSpLaCiMmHZx-KLM9sL8eqZV6ew3dGjJViMpRQuqtQ13vc';
+
+  static const String forgotPasswordHero =
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuDZmCejwyWXhQ_qT-GTtRXZBQjS-XnxHS6HTQ6CsWvB2efhfzEjMizlE8SmezJAqjAwJpXquZEvd3_YvcQztOPQbh5sU-Va90OW7Jh1_UgiqSdCGl1wU14B_ky2I3FnxSJwi-xQ7epgYB2mVjlZVGIwIkmu9xfJtZZ5Fz8E9Bj0mKwMaBb_5nyAZmdXnx0yYfjHW6GgdUexwnT1GlZ3nudpYtG_tBIx-6v1A934fRLW69ZawCCezaN3m2ldR6vqAuDyGU2T-8hXRzU';
+}
