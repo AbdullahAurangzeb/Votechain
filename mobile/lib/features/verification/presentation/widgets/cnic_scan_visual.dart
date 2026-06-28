@@ -38,54 +38,66 @@ class _CnicScanVisualState extends State<CnicScanVisual>
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final percent = (widget.progress * 100).round();
+    const visualSize = 280.0;
+    const ringSize = 220.0;
 
     return SizedBox(
-      height: 280,
+      width: visualSize,
+      height: visualSize,
       child: Stack(
         alignment: Alignment.center,
         children: [
           CustomPaint(
-            size: const Size(280, 280),
+            size: const Size(visualSize, visualSize),
             painter: _GlowPainter(),
           ),
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return CustomPaint(
-                size: const Size(220, 140),
-                painter: _CnicCardPainter(laserY: _controller.value),
-              );
-            },
+          Positioned(
+            top: visualSize * 0.26,
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return CustomPaint(
+                  size: const Size(180, 110),
+                  painter: _CnicCardPainter(laserY: _controller.value),
+                );
+              },
+            ),
           ),
           SizedBox(
-            width: 200,
-            height: 200,
-            child: Stack(
-              alignment: Alignment.center,
+            width: ringSize,
+            height: ringSize,
+            child: CircularProgressIndicator(
+              value: widget.progress,
+              strokeWidth: 8,
+              strokeCap: StrokeCap.round,
+              backgroundColor: AppColors.surfaceVariant,
+              color: AppColors.primaryDisplay,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircularProgressIndicator(
-                  value: widget.progress,
-                  strokeWidth: 6,
-                  backgroundColor: AppColors.surfaceVariant,
-                  color: AppColors.primaryDisplay,
+                Text(
+                  '$percent%',
+                  textAlign: TextAlign.center,
+                  style: textTheme.displaySmall?.copyWith(
+                    color: AppColors.primaryDisplay,
+                    height: 1.1,
+                  ),
                 ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '$percent%',
-                      style: textTheme.displaySmall?.copyWith(
-                        color: AppColors.primaryDisplay,
-                      ),
-                    ),
-                    Text(
-                      'PROCESSING',
-                      style: textTheme.labelMedium?.copyWith(
-                        color: AppColors.onSurfaceVariant,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  'PROCESSING',
+                  textAlign: TextAlign.center,
+                  style: textTheme.labelMedium?.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                    letterSpacing: 2,
+                    height: 1.2,
+                  ),
                 ),
               ],
             ),

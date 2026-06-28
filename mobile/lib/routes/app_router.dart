@@ -7,6 +7,11 @@ import '../features/authentication/presentation/pages/login_page.dart';
 import '../features/authentication/presentation/pages/register_page.dart';
 import '../features/authentication/presentation/pages/splash_page.dart';
 import '../features/authentication/presentation/providers/app_bootstrap_provider.dart';
+import '../features/face_registration/presentation/face_registration_routes.dart';
+import '../features/face_registration/presentation/pages/ai_face_processing_page.dart';
+import '../features/face_registration/presentation/pages/face_registration_page.dart';
+import '../features/face_registration/presentation/pages/face_verification_complete_page.dart';
+import '../features/face_registration/presentation/pages/live_face_verification_page.dart';
 import '../features/verification/presentation/pages/ai_scanning_page.dart';
 import '../features/verification/presentation/pages/review_extracted_info_page.dart';
 import '../features/verification/presentation/pages/upload_cnic_page.dart';
@@ -69,6 +74,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: VerificationRoutes.pending,
         name: VerificationRoutes.pendingName,
         builder: (context, state) => const VerificationPendingPage(),
+      ),
+      GoRoute(
+        path: FaceRegistrationRoutes.register,
+        name: FaceRegistrationRoutes.registerName,
+        builder: (context, state) => const FaceRegistrationPage(),
+      ),
+      GoRoute(
+        path: FaceRegistrationRoutes.processing,
+        name: FaceRegistrationRoutes.processingName,
+        builder: (context, state) => const AiFaceProcessingPage(),
+      ),
+      GoRoute(
+        path: FaceRegistrationRoutes.liveVerify,
+        name: FaceRegistrationRoutes.liveVerifyName,
+        builder: (context, state) => const LiveFaceVerificationPage(),
+      ),
+      GoRoute(
+        path: FaceRegistrationRoutes.complete,
+        name: FaceRegistrationRoutes.completeName,
+        builder: (context, state) => const FaceVerificationCompletePage(),
       ),
     ],
   );

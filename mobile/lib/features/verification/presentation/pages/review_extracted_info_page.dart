@@ -15,7 +15,8 @@ import '../../../../widgets/votechain_surface_card.dart';
 import '../../../../shared/widgets/votechain_page_header.dart';
 import '../../domain/entities/cnic_extraction.dart';
 import '../providers/verification_providers.dart';
-import '../verification_routes.dart';
+import '../../../verification/presentation/verification_routes.dart';
+import '../../../face_registration/presentation/face_registration_routes.dart';
 import '../widgets/verification_step_header.dart';
 
 /// Review OCR-extracted CNIC fields before admin submission (mock).
@@ -273,7 +274,7 @@ class ReviewExtractedInfoPage extends ConsumerWidget {
                     onPressed: () async {
                       final ok = await controller.submitForReview();
                       if (ok && context.mounted) {
-                        context.go(VerificationRoutes.pending);
+                        context.go(FaceRegistrationRoutes.register);
                       }
                     },
                   ),

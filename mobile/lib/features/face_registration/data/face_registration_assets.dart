@@ -1,0 +1,14 @@
+/// Stitch illustration URLs for face registration screens.
+abstract final class FaceRegistrationAssets {
+  static const String capturePlaceholder =
+      'https://lh3.googleusercontent.com/aida/AP1WRLsRBlzJm5ozNZsi9hGarZRBZCvnH2_EpluqrCM2fMU7jwn3c703IqBVhH2MvymmhjTyLqs0C2pOowj99ToL_f0WQLv0-qoPJesdMSLDI08YcTK8huWKd7JRk7B8SHd97paxWtmaao0kXioWdBhUp7634W6qoO1jeWpF_5k_0gjqLlS225U--W0qKSlk4h30xfhOpVCFkQsJlYxNtqCIXGmjWzg40vdL0F40aiReGTxEnf1Vdqz165Zs4g';
+
+  static const String processingHero =
+      'https://lh3.googleusercontent.com/aida/AP1WRLvPZyj3pjvg_hYUd8EL5DRJs4PFN-FTYE3sBlqaBjWu8ABeC-1SIZDVUcqA7dcqMujfqxln77FL3nQannDS_Po382GIiy6ebcO9RyKzTz9Nod8Zd_Q6Xd_6zq6E8W6hcfswJNkBRTvTEABXfjcK_Om3Lek76D9gKpFWwSrv3hV1IjU8iw1t5eP7DdL8UeMHKbDFbeXNtnuGiBp5FJSArgRA5iV3eCElXgbF5Tah1oOwIIJ-OCqFdv_yA0w';
+
+  static const String liveVerificationPlaceholder =
+      'https://lh3.googleusercontent.com/aida/AP1WRLt6DbLr-lT8Ktkbj81fodwJ6d2BP2Ws8SBJirzacn-6_bnKRAaQJQ-_OcdleV9rDc852FKpqLWqrCgnlrdxJTy3zC_A1l9Rb_3uKY_H2_vaereB3RdXVLajjOPfq1ltQNyfRhN-7jbMlxB8ednBFEG6qTfr9c37L888JU6chUptpwdoL1R9TZ8kCwhmCmFFaHz0dnbSyyBbkdSOrwePxUmJFKdpjO66ROIYkmY0JoKDKbujjRyrWcmqIlc';
+
+  static const String completeHero =
+      'https://lh3.googleusercontent.com/aida/AP1WRLuSaBQ4Byz37QNdW0TGAlbbVcA3JU5yGCFpNcFU7TE1aFhGCGewy19J_zPk7D4V3hBMyKEKdiqAq7u-g3JsYil0hDc6V_n14RRyjQEQRXMaVECieeUpDmDrCyiXGpZ0ePRruQCDJrBpR0cLwPegrXwKo2SVB4Wt-GFmcwxh6nwUgB2TfGKieZg6UVdYrZw9iFwzbtXhprQjQLRE7xFkXkI6qHapaFt5faTAS_nQf8APWrWm70RyQLpsgAw';
+}
