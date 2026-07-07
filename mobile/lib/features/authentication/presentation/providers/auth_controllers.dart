@@ -6,35 +6,62 @@ import '../../domain/repositories/auth_repository.dart';
 import '../../domain/use_cases/forgot_password_use_case.dart';
 import '../../domain/use_cases/login_use_case.dart';
 import '../../domain/use_cases/register_use_case.dart';
+import '../../domain/use_cases/get_current_user_use_case.dart';
 import 'auth_providers.dart';
 
-/// Splash bootstrap state — checks mock session then navigates.
-enum SplashStatus { loading, navigateLogin }
+/// Splash bootstrap state.
+enum SplashStatus { loading, navigateLogin, navigateAuthenticated }
 
 class SplashState {
-  const SplashState({required this.status});
+  const SplashState({
+    required this.status,
+    this.user,
+  });
 
   final SplashStatus status;
+  final AuthUser? user;
 
-  SplashState copyWith({SplashStatus? status}) =>
-      SplashState(status: status ?? this.status);
+  SplashState copyWith({
+    SplashStatus? status,
+    AuthUser? user,
+  }) =>
+      SplashState(
+        status: status ?? this.status,
+        user: user ?? this.user,
+      );
 }
 
 class SplashController extends StateNotifier<SplashState> {
-  SplashController(this._repository)
+  SplashController(this._restoreSession, this._sessionController)
       : super(const SplashState(status: SplashStatus.loading));
 
-  final AuthRepository _repository;
+  final RestoreSessionUseCase _restoreSession;
+  final AuthSessionController _sessionController;
 
   Future<void> initialize() async {
     await Future<void>.delayed(const Duration(milliseconds: 2800));
-    await _repository.hasActiveSession();
+
+    final user = await _restoreSession();
+
+    if (user != null) {
+      _sessionController.setUser(user);
+      state = SplashState(
+        status: SplashStatus.navigateAuthenticated,
+        user: user,
+      );
+      return;
+    }
+
+    state = const SplashState(status: SplashStatus.navigateLogin);
   }
 }
 
 final splashControllerProvider =
     StateNotifierProvider<SplashController, SplashState>((ref) {
-  return SplashController(ref.watch(authRepositoryProvider));
+  return SplashController(
+    ref.watch(restoreSessionUseCaseProvider),
+    ref.read(authSessionProvider.notifier),
+  );
 });
 
 /// Login form + submission state.
@@ -85,9 +112,11 @@ class LoginState {
 }
 
 class LoginController extends StateNotifier<LoginState> {
-  LoginController(this._login) : super(const LoginState());
+  LoginController(this._login, this._sessionController)
+      : super(const LoginState());
 
   final LoginUseCase _login;
+  final AuthSessionController _sessionController;
 
   void setIdentifier(String value) =>
       state = state.copyWith(identifier: value, clearErrors: true);
@@ -105,6 +134,7 @@ class LoginController extends StateNotifier<LoginState> {
         identifier: state.identifier,
         password: state.password,
       );
+      _sessionController.setUser(user);
       state = state.copyWith(isSubmitting: false, user: user);
       return true;
     } on AuthFailure catch (e) {
@@ -125,7 +155,10 @@ class LoginController extends StateNotifier<LoginState> {
 
 final loginControllerProvider =
     StateNotifierProvider<LoginController, LoginState>((ref) {
-  return LoginController(ref.watch(loginUseCaseProvider));
+  return LoginController(
+    ref.watch(loginUseCaseProvider),
+    ref.read(authSessionProvider.notifier),
+  );
 });
 
 /// Registration step 1 form state.
@@ -175,9 +208,11 @@ class RegisterState {
 }
 
 class RegisterController extends StateNotifier<RegisterState> {
-  RegisterController(this._register) : super(const RegisterState());
+  RegisterController(this._register, this._sessionController)
+      : super(const RegisterState());
 
   final RegisterUseCase _register;
+  final AuthSessionController _sessionController;
 
   void setFullName(String v) =>
       state = state.copyWith(fullName: v, clearError: true);
@@ -201,6 +236,7 @@ class RegisterController extends StateNotifier<RegisterState> {
           confirmPassword: state.confirmPassword,
         ),
       );
+      _sessionController.setUser(user);
       state = state.copyWith(isSubmitting: false, user: user);
       return true;
     } on AuthFailure catch (e) {
@@ -218,7 +254,10 @@ class RegisterController extends StateNotifier<RegisterState> {
 
 final registerControllerProvider =
     StateNotifierProvider<RegisterController, RegisterState>((ref) {
-  return RegisterController(ref.watch(registerUseCaseProvider));
+  return RegisterController(
+    ref.watch(registerUseCaseProvider),
+    ref.read(authSessionProvider.notifier),
+  );
 });
 
 /// Forgot password form state.

@@ -9,6 +9,7 @@ import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_icons.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../data/auth_assets.dart';
+import '../auth_navigation.dart';
 import '../auth_routes.dart';
 import '../../../../shared/widgets/votechain_background.dart';
 import '../providers/app_bootstrap_provider.dart';
@@ -36,6 +37,16 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     if (!mounted) return;
 
     ref.read(hasCompletedSplashProvider.notifier).state = true;
+
+    final splashState = ref.read(splashControllerProvider);
+    final router = GoRouter.of(context);
+
+    if (splashState.status == SplashStatus.navigateAuthenticated &&
+        splashState.user != null) {
+      navigateAfterAuthentication(router, splashState.user!);
+      return;
+    }
+
     context.go(AuthRoutes.login);
   }
 

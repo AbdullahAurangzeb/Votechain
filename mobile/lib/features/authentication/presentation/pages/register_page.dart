@@ -17,11 +17,11 @@ import '../../../../shared/widgets/votechain_text_field.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_icons.dart';
 import '../../../../theme/app_spacing.dart';
-import '../../../verification/presentation/verification_routes.dart';
+import '../auth_navigation.dart';
 import '../auth_routes.dart';
 import '../providers/auth_controllers.dart';
 
-/// Registration step 1 — personal information (mock only).
+/// Registration step 1 — personal information.
 class RegisterPage extends ConsumerWidget {
   const RegisterPage({super.key});
 
@@ -108,7 +108,10 @@ class RegisterPage extends ConsumerWidget {
               onPressed: () async {
                 final ok = await controller.submit();
                 if (ok && context.mounted) {
-                  context.go(VerificationRoutes.uploadCnic);
+                  final user = ref.read(registerControllerProvider).user;
+                  if (user != null) {
+                    navigateAfterAuthentication(GoRouter.of(context), user);
+                  }
                 }
               },
             ),

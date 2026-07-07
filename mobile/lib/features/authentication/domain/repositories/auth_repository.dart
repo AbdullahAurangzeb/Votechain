@@ -1,6 +1,6 @@
 import '../entities/auth_user.dart';
 
-/// Registration payload for step 1 (personal information).
+/// Registration payload for voter sign-up.
 class RegisterRequest {
   const RegisterRequest({
     required this.fullName,
@@ -17,7 +17,7 @@ class RegisterRequest {
   final String confirmPassword;
 }
 
-/// Contract for authentication data access — implemented by mock/API layer.
+/// Contract for authentication data access.
 abstract interface class AuthRepository {
   Future<AuthUser> login({
     required String identifier,
@@ -26,7 +26,12 @@ abstract interface class AuthRepository {
 
   Future<AuthUser> register(RegisterRequest request);
 
-  Future<void> requestPasswordReset({required String identifier});
+  Future<AuthUser> getCurrentUser();
 
-  Future<bool> hasActiveSession();
+  /// Restores a session from secure storage when a valid token exists.
+  Future<AuthUser?> restoreSession();
+
+  Future<void> clearSession();
+
+  Future<void> requestPasswordReset({required String identifier});
 }

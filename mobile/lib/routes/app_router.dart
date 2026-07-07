@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/dashboard/presentation/dashboard_routes.dart';
+import '../features/dashboard/presentation/pages/home_dashboard_page.dart';
 import '../features/authentication/presentation/auth_routes.dart';
 import '../features/authentication/presentation/pages/forgot_password_page.dart';
 import '../features/authentication/presentation/pages/login_page.dart';
@@ -15,6 +17,7 @@ import '../features/face_registration/presentation/pages/live_face_verification_
 import '../features/verification/presentation/pages/ai_scanning_page.dart';
 import '../features/verification/presentation/pages/review_extracted_info_page.dart';
 import '../features/verification/presentation/pages/upload_cnic_page.dart';
+import '../features/verification/presentation/pages/verification_failed_page.dart';
 import '../features/verification/presentation/pages/verification_pending_page.dart';
 import '../features/verification/presentation/verification_routes.dart';
 
@@ -56,6 +59,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ForgotPasswordPage(),
       ),
       GoRoute(
+        path: DashboardRoutes.home,
+        name: DashboardRoutes.homeName,
+        builder: (context, state) => const HomeDashboardPage(),
+      ),
+      GoRoute(
         path: VerificationRoutes.uploadCnic,
         name: VerificationRoutes.uploadCnicName,
         builder: (context, state) => const UploadCnicPage(),
@@ -74,6 +82,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: VerificationRoutes.pending,
         name: VerificationRoutes.pendingName,
         builder: (context, state) => const VerificationPendingPage(),
+      ),
+      GoRoute(
+        path: VerificationRoutes.failed,
+        name: VerificationRoutes.failedName,
+        builder: (context, state) => const VerificationFailedPage(),
       ),
       GoRoute(
         path: FaceRegistrationRoutes.register,

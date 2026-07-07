@@ -2,7 +2,7 @@ import '../../domain/entities/auth_user.dart';
 import '../../domain/failures/auth_failure.dart';
 import '../../domain/repositories/auth_repository.dart';
 
-/// In-memory mock auth repository — no network calls.
+/// In-memory mock auth repository for tests and offline development.
 class MockAuthRepository implements AuthRepository {
   MockAuthRepository();
 
@@ -11,15 +11,31 @@ class MockAuthRepository implements AuthRepository {
     fullName: 'Arslan Khalid',
     email: 'arslan.khalid@votechain.pk',
     phone: '+92 300 1234567',
-    isVerified: false,
+    role: UserRole.voter,
+    approvalStatus: ApprovalStatus.pending,
+    verificationStatus: VerificationStatus.notStarted,
+    faceRegistered: false,
   );
 
-  bool _sessionActive = false;
+  AuthUser? _sessionUser;
 
   @override
-  Future<bool> hasActiveSession() async {
+  Future<AuthUser?> restoreSession() async {
     await Future<void>.delayed(const Duration(milliseconds: 300));
-    return _sessionActive;
+    return _sessionUser;
+  }
+
+  @override
+  Future<AuthUser> getCurrentUser() async {
+    if (_sessionUser == null) {
+      throw const AuthFailure('Authentication required');
+    }
+    return _sessionUser!;
+  }
+
+  @override
+  Future<void> clearSession() async {
+    _sessionUser = null;
   }
 
   @override
@@ -33,21 +49,23 @@ class MockAuthRepository implements AuthRepository {
       throw const AuthFailure('Invalid credentials. Please try again.');
     }
 
-    _sessionActive = true;
-    return _mockUser.copyWithIdentifier(identifier);
+    _sessionUser = _mockUser.copyWithIdentifier(identifier);
+    return _sessionUser!;
   }
 
   @override
   Future<AuthUser> register(RegisterRequest request) async {
     await Future<void>.delayed(const Duration(milliseconds: 900));
 
-    _sessionActive = true;
     return AuthUser(
       id: 'voter-new',
       fullName: request.fullName.trim(),
       email: request.email.trim(),
       phone: request.phone.trim(),
-      isVerified: false,
+      role: UserRole.voter,
+      approvalStatus: ApprovalStatus.pending,
+      verificationStatus: VerificationStatus.notStarted,
+      faceRegistered: false,
     );
   }
 
@@ -69,7 +87,11 @@ extension on AuthUser {
       fullName: fullName,
       email: looksLikeEmail ? identifier : email,
       phone: phone,
-      isVerified: isVerified,
+      role: role,
+      approvalStatus: approvalStatus,
+      verificationStatus: verificationStatus,
+      faceRegistered: faceRegistered,
+      cnic: cnic,
     );
   }
 }

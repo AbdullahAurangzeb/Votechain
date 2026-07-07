@@ -13,6 +13,9 @@ import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_icons.dart';
 import '../../../../theme/app_radius.dart';
 import '../../../../theme/app_spacing.dart';
+import '../../../authentication/domain/entities/auth_user.dart';
+import '../../../authentication/presentation/providers/auth_providers.dart';
+import '../../../verification/presentation/providers/verification_providers.dart';
 import '../../../verification/presentation/verification_routes.dart';
 import '../face_registration_routes.dart';
 import '../../data/face_registration_assets.dart';
@@ -119,10 +122,49 @@ class FaceVerificationCompletePage extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xl),
+                  if (ref.watch(verificationFlowControllerProvider).errorMessage !=
+                      null) ...[
+                    Text(
+                      ref.watch(verificationFlowControllerProvider).errorMessage!,
+                      textAlign: TextAlign.center,
+                      style: textTheme.labelMedium?.copyWith(
+                        color: AppColors.error,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
                   VoteChainPrimaryButton(
                     label: 'Continue to Approval',
                     icon: AppIcons.arrowForward,
-                    onPressed: () => context.go(VerificationRoutes.pending),
+                    isLoading:
+                        ref.watch(verificationFlowControllerProvider).isSubmitting,
+                    onPressed: () async {
+                      final verificationController = ref.read(
+                        verificationFlowControllerProvider.notifier,
+                      );
+                      final status =
+                          await verificationController.submitVerification();
+                      if (!context.mounted || status == null) return;
+
+                      final sessionUser = ref.read(authSessionProvider);
+                      if (sessionUser != null) {
+                        ref.read(authSessionProvider.notifier).setUser(
+                              AuthUser(
+                                id: sessionUser.id,
+                                fullName: sessionUser.fullName,
+                                email: sessionUser.email,
+                                phone: sessionUser.phone,
+                                role: sessionUser.role,
+                                approvalStatus: status.approvalStatus,
+                                verificationStatus: status.verificationStatus,
+                                faceRegistered: status.faceRegistered,
+                                cnic: status.cnic,
+                              ),
+                            );
+                      }
+
+                      context.go(VerificationRoutes.pending);
+                    },
                   ),
                   const SizedBox(height: AppSpacing.md),
                   VoteChainSecondaryButton(

@@ -31,11 +31,7 @@ All code across the monorepo must adhere to the following principles:
 
 ---
 
-
-
 ## 2. Flutter Rules
-
-
 
 ### Always Use
 
@@ -47,15 +43,11 @@ All code across the monorepo must adhere to the following principles:
 - **Freezed** for immutable data models
 - **Json Serializable** for JSON serialization/deserialization
 
-
-
 ### Never
 
 - Put business logic inside widgets.
 - Make API calls directly from UI widgets.
 - Create massive `StatefulWidget` classes.
-
-
 
 ### Prefer
 
@@ -64,8 +56,6 @@ All code across the monorepo must adhere to the following principles:
 - **Feature-first architecture** — organize code by feature, not by type.
 
 ---
-
-
 
 ## 3. Folder Structure
 
@@ -105,8 +95,6 @@ features/<feature_name>/
 
 ---
 
-
-
 ## 4. State Management
 
 - Use **Riverpod only** — no Provider, Bloc, GetX, or other state libraries.
@@ -119,8 +107,6 @@ Widget  →  watches  →  Controller (Notifier)  →  calls  →  Repository  �
 ```
 
 ---
-
-
 
 ## 5. API Rules
 
@@ -143,8 +129,6 @@ abstract final class ApiEndpoints {
 
 ---
 
-
-
 ## 6. Backend Rules
 
 The Node.js backend must follow these conventions:
@@ -164,8 +148,6 @@ Request  →  Validation Middleware  →  Auth Middleware  →  Controller  → 
 ```
 
 ---
-
-
 
 ## 7. Database Rules
 
@@ -189,8 +171,6 @@ Request  →  Validation Middleware  →  Auth Middleware  →  Controller  → 
 
 ---
 
-
-
 ## 8. Blockchain Rules
 
 - Smart contracts must be written in **Solidity**.
@@ -201,8 +181,6 @@ Request  →  Validation Middleware  →  Auth Middleware  →  Controller  → 
 - Keep contract logic minimal — heavy validation belongs off-chain.
 
 ---
-
-
 
 ## 9. AI Service Rules
 
@@ -219,8 +197,6 @@ Flutter / Backend  →  HTTP  →  FastAPI AI Service
 ```
 
 ---
-
-
 
 ## 10. UI Rules
 
@@ -243,8 +219,6 @@ Flutter / Backend  →  HTTP  →  FastAPI AI Service
 
 ---
 
-
-
 ## 11. Git Rules
 
 - Make **small, focused commits** — one logical change per commit.
@@ -255,8 +229,6 @@ Flutter / Backend  →  HTTP  →  FastAPI AI Service
 
 ---
 
-
-
 ## 12. Documentation Rules
 
 - Every **major class** must contain a brief doc comment explaining its purpose.
@@ -266,8 +238,6 @@ Flutter / Backend  →  HTTP  →  FastAPI AI Service
 - Use JSDoc (backend), Dart doc comments (Flutter), and Python docstrings (AI service).
 
 ---
-
-
 
 ## 13. General AI Rules
 
@@ -283,8 +253,6 @@ When generating code for VoteChain, AI assistants must:
 - **Match existing conventions** — naming, formatting, import style, and error handling patterns.
 
 ---
-
-
 
 ## Quick Reference Checklist
 

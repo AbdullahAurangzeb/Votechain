@@ -4,9 +4,11 @@ abstract final class VerificationRoutes {
   static const String scanning = '/verify/scanning';
   static const String review = '/verify/review';
   static const String pending = '/verify/pending';
+  static const String failed = '/verify/failed';
 
   static const String uploadCnicName = 'verify-upload-cnic';
   static const String scanningName = 'verify-scanning';
   static const String reviewName = 'verify-review';
   static const String pendingName = 'verify-pending';
+  static const String failedName = 'verify-failed';
 }

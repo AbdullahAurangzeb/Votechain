@@ -16,10 +16,11 @@ import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_icons.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../data/auth_assets.dart';
+import '../auth_navigation.dart';
 import '../auth_routes.dart';
 import '../providers/auth_controllers.dart';
 
-/// Login screen — mock authentication, no backend.
+/// Login screen — authenticates against the VoteChain backend API.
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
 
@@ -138,13 +139,12 @@ class LoginPage extends ConsumerWidget {
                           final ok = await controller.submit();
                           if (ok && context.mounted) {
                             final user = ref.read(loginControllerProvider).user;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Authenticated as ${user?.fullName ?? 'Voter'}',
-                                ),
-                              ),
-                            );
+                            if (user != null) {
+                              navigateAfterAuthentication(
+                                GoRouter.of(context),
+                                user,
+                              );
+                            }
                           }
                         },
                       ),
