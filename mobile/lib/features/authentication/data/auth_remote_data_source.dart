@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../core/constants/api_endpoints.dart';
 import '../domain/entities/auth_user.dart';
@@ -100,12 +101,13 @@ class AuthRemoteDataSource {
   }
 
   /// Converts Dio and API envelope errors into [AuthFailure].
-  static AuthFailure mapException(Object error) {
+  static AuthFailure mapException(Object error, [StackTrace? stackTrace]) {
     if (error is AuthFailure) {
       return error;
     }
 
     if (error is DioException) {
+      _logDioException(error, stackTrace);
       final responseData = error.response?.data;
 
       if (responseData is Map<String, dynamic>) {
@@ -116,19 +118,60 @@ class AuthRemoteDataSource {
         case DioExceptionType.connectionTimeout:
         case DioExceptionType.sendTimeout:
         case DioExceptionType.receiveTimeout:
-          return const AuthFailure(
-            'Connection timed out. Check your network and try again.',
-          );
+          return AuthFailure(_timeoutMessage(error));
         case DioExceptionType.connectionError:
-          return const AuthFailure(
-            'Unable to reach the server. Check your connection and API URL.',
-          );
+          return AuthFailure(_connectionErrorMessage(error));
+        case DioExceptionType.badResponse:
+          return AuthFailure(_badResponseMessage(error));
         default:
-          return const AuthFailure('Network request failed. Please try again.');
+          return AuthFailure(_genericDioMessage(error));
       }
     }
 
-    return const AuthFailure('Something went wrong. Please try again.');
+    debugPrint(
+      '[VoteChain][Network][Auth] Non-Dio error: $error\n$stackTrace',
+    );
+    return AuthFailure('Unexpected error: $error');
+  }
+
+  static void _logDioException(DioException error, [StackTrace? stackTrace]) {
+    if (!kDebugMode) return;
+
+    debugPrint(
+      '[VoteChain][Network][Auth][DioException]\n'
+      '  type: ${error.type}\n'
+      '  message: ${error.message}\n'
+      '  uri: ${error.requestOptions.uri}\n'
+      '  baseUrl: ${error.requestOptions.baseUrl}\n'
+      '  path: ${error.requestOptions.path}\n'
+      '  status: ${error.response?.statusCode}\n'
+      '  response: ${error.response?.data}\n'
+      '  inner: ${error.error}\n'
+      '  stackTrace: ${stackTrace ?? error.stackTrace}',
+    );
+  }
+
+  static String _connectionErrorMessage(DioException error) {
+    final inner = error.error;
+    return 'Dio connectionError: ${error.message ?? 'no message'}'
+        '${inner != null ? ' | cause: $inner' : ''}'
+        ' | url: ${error.requestOptions.uri}';
+  }
+
+  static String _timeoutMessage(DioException error) {
+    return 'Dio ${error.type.name}: ${error.message ?? 'timed out'}'
+        ' | url: ${error.requestOptions.uri}';
+  }
+
+  static String _badResponseMessage(DioException error) {
+    return 'Dio badResponse: status=${error.response?.statusCode}'
+        ' | url: ${error.requestOptions.uri}'
+        ' | body: ${error.response?.data}';
+  }
+
+  static String _genericDioMessage(DioException error) {
+    return 'Dio ${error.type.name}: ${error.message ?? 'request failed'}'
+        ' | url: ${error.requestOptions.uri}';
   }
 
   static String _messageFromBody(Map<String, dynamic> body) {

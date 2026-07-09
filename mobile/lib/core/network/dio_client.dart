@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../constants/env_config.dart';
 import 'auth_interceptor.dart';
+import 'network_logging_interceptor.dart';
 import 'token_storage.dart';
 
 /// Shared Dio instance for VoteChain API calls.
@@ -22,7 +24,14 @@ class DioClient {
                 },
               ),
             ) {
+    if (kDebugMode) {
+      debugPrint(
+        '[VoteChain][Network][DioClient] '
+        'Initialized with baseUrl: ${EnvConfig.apiBaseUrl}',
+      );
+    }
     _dio.interceptors.add(AuthInterceptor(tokenStorage));
+    _dio.interceptors.add(NetworkLoggingInterceptor());
   }
 
   final Dio _dio;

@@ -29,6 +29,9 @@ const env = {
     dir: process.env.UPLOAD_DIR || 'uploads',
     maxFileSizeMb: Number(process.env.UPLOAD_MAX_FILE_SIZE_MB) || 5,
   },
+  aiService: {
+    baseUrl: process.env.AI_SERVICE_URL || 'http://localhost:8000',
+  },
 };
 
 /**

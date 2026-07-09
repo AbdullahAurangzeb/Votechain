@@ -1,7 +1,8 @@
-/// OCR-extracted CNIC identity fields (mock / domain model).
+/// OCR-extracted CNIC identity fields.
 class CnicExtraction {
   const CnicExtraction({
     required this.fullName,
+    required this.fatherName,
     required this.cnicNumber,
     required this.dateOfBirth,
     required this.gender,
@@ -12,6 +13,7 @@ class CnicExtraction {
   });
 
   final String fullName;
+  final String fatherName;
   final String cnicNumber;
   final String dateOfBirth;
   final String gender;
@@ -22,6 +24,7 @@ class CnicExtraction {
 
   CnicExtraction copyWith({
     String? fullName,
+    String? fatherName,
     String? cnicNumber,
     String? dateOfBirth,
     String? gender,
@@ -32,6 +35,7 @@ class CnicExtraction {
   }) {
     return CnicExtraction(
       fullName: fullName ?? this.fullName,
+      fatherName: fatherName ?? this.fatherName,
       cnicNumber: cnicNumber ?? this.cnicNumber,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       gender: gender ?? this.gender,

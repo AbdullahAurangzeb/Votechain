@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_icons.dart';
@@ -15,7 +16,7 @@ import '../widgets/cnic_upload_card.dart';
 import '../widgets/verification_security_tile.dart';
 import '../widgets/verification_step_header.dart';
 
-/// Upload CNIC front/back — mock capture only (step 2 of 4).
+/// Upload CNIC front/back — step 2 of 4.
 class UploadCnicPage extends ConsumerWidget {
   const UploadCnicPage({super.key});
 
@@ -75,15 +76,19 @@ class UploadCnicPage extends ConsumerWidget {
                   CnicUploadCard(
                     title: 'Front Side of CNIC',
                     isUploaded: state.frontUploaded,
-                    onCameraTap: controller.mockUploadFront,
-                    onGalleryTap: controller.mockUploadFront,
+                    onCameraTap: () =>
+                        controller.pickFrontImage(ImageSource.camera),
+                    onGalleryTap: () =>
+                        controller.pickFrontImage(ImageSource.gallery),
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   CnicUploadCard(
                     title: 'Back Side of CNIC',
                     isUploaded: state.backUploaded,
-                    onCameraTap: controller.mockUploadBack,
-                    onGalleryTap: controller.mockUploadBack,
+                    onCameraTap: () =>
+                        controller.pickBackImage(ImageSource.camera),
+                    onGalleryTap: () =>
+                        controller.pickBackImage(ImageSource.gallery),
                   ),
                   if (state.errorMessage != null) ...[
                     const SizedBox(height: AppSpacing.md),

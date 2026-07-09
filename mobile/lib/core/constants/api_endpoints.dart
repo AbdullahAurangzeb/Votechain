@@ -2,7 +2,7 @@ import 'env_config.dart';
 
 /// Centralized API endpoint paths for the VoteChain backend.
 abstract final class ApiEndpoints {
-  static const String baseUrl = EnvConfig.apiBaseUrl;
+  static String get baseUrl => EnvConfig.apiBaseUrl;
 
   static const String authRegister = '/api/v1/auth/register';
   static const String authLogin = '/api/v1/auth/login';

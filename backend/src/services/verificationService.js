@@ -1,4 +1,5 @@
 const verificationRepository = require('../repositories/verificationRepository');
+const aiOcrService = require('./aiOcrService');
 const AppError = require('../utils/AppError');
 const { VERIFICATION_STATUSES } = require('../models/User');
 
@@ -6,6 +7,15 @@ const { VERIFICATION_STATUSES } = require('../models/User');
  * Business logic for voter identity verification submissions.
  */
 class VerificationService {
+  /**
+   * Extracts CNIC fields from an uploaded image via the AI OCR service.
+   * @param {Express.Multer.File} file
+   * @returns {Promise<{ rawText: string[], parsed: object }>}
+   */
+  async extractCnicFromImage(file) {
+    return aiOcrService.extractFromImage(file);
+  }
+
   /**
    * Submits CNIC and face registration data for admin review.
    * @param {string} userId
@@ -28,13 +38,23 @@ class VerificationService {
     }
 
     const { cnicNumber, cnicFrontImageUrl, cnicBackImageUrl } = input;
+    const normalizedCnic = verificationRepository.normalizeCnic(cnicNumber);
+    const userOwnsCnic =
+      user.cnic &&
+      verificationRepository.normalizeCnic(user.cnic) === normalizedCnic;
 
-    if (await verificationRepository.cnicExistsForOtherUser(cnicNumber, userId)) {
+    if (
+      !userOwnsCnic &&
+      (await verificationRepository.cnicExistsForOtherUser(
+        normalizedCnic,
+        userId,
+      ))
+    ) {
       throw new AppError('CNIC is already registered to another account', 409);
     }
 
     const updatedUser = await verificationRepository.submitVerification(userId, {
-      cnicNumber,
+      cnicNumber: normalizedCnic,
       cnicFrontImageUrl,
       cnicBackImageUrl,
       submittedAt: new Date(),

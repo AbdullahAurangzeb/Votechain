@@ -12,6 +12,7 @@ import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_icons.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../data/face_registration_assets.dart';
+import '../../../verification/presentation/verification_routes.dart';
 import '../face_registration_routes.dart';
 import '../providers/face_registration_providers.dart';
 import '../widgets/face_guideline_tile.dart';
@@ -29,7 +30,11 @@ class FaceRegistrationPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.surfaceContainerLowest,
-      appBar: const VoteChainAppBar(showBrand: true),
+      appBar: VoteChainAppBar(
+        showBack: true,
+        onBack: () => context.go(VerificationRoutes.review),
+        showBrand: true,
+      ),
       body: VoteChainScrollForm(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

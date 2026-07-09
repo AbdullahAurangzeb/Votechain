@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/network/dio_client.dart';
 import '../../data/verification_remote_data_source.dart';
@@ -8,7 +11,15 @@ import '../../domain/entities/verification_status_result.dart';
 import '../../domain/entities/verification_phase.dart';
 import '../../domain/failures/verification_failure.dart';
 import '../../domain/repositories/verification_repository.dart';
+import '../../data/local_ocr_repository_impl.dart';
 import '../../data/verification_assets.dart';
+import '../../data/verification_progress_storage.dart';
+import '../../domain/entities/verification_local_step.dart';
+import '../controllers/ocr_controller.dart';
+import 'ocr_providers.dart';
+
+final verificationProgressStorageProvider =
+    Provider<VerificationProgressStorage>((_) => VerificationProgressStorage());
 
 final verificationRemoteDataSourceProvider =
     Provider<VerificationRemoteDataSource>((ref) {
@@ -79,51 +90,140 @@ class VerificationFlowState {
 }
 
 class VerificationFlowController extends StateNotifier<VerificationFlowState> {
-  VerificationFlowController(this._repository) : super(const VerificationFlowState());
+  VerificationFlowController(
+    this._repository,
+    this._ocrController,
+    this._progressStorage,
+  ) : super(const VerificationFlowState());
 
   final VerificationRepository _repository;
+  final OcrController _ocrController;
+  final VerificationProgressStorage _progressStorage;
+  final ImagePicker _imagePicker = ImagePicker();
+  XFile? _frontImage;
 
-  void mockUploadFront() => state = state.copyWith(
-        frontUploaded: true,
-        cnicFrontImageUrl: VerificationAssets.mockCnicFrontUrl,
-        clearError: true,
-      );
+  Future<void> pickFrontImage(ImageSource source) async {
+    final image = await _imagePicker.pickImage(
+      source: source,
+      imageQuality: 85,
+    );
+    if (image == null) return;
 
-  void mockUploadBack() => state = state.copyWith(
-        backUploaded: true,
-        cnicBackImageUrl: VerificationAssets.mockCnicBackUrl,
-        clearError: true,
-      );
+    _frontImage = image;
+    state = state.copyWith(
+      frontUploaded: true,
+      cnicFrontImageUrl: VerificationAssets.mockCnicFrontUrl,
+      clearError: true,
+    );
+    await _persistProgress(step: VerificationLocalStep.upload);
+  }
 
-  void resetUploads() => state = const VerificationFlowState();
+  Future<void> pickBackImage(ImageSource source) async {
+    final image = await _imagePicker.pickImage(
+      source: source,
+      imageQuality: 85,
+    );
+    if (image == null) return;
+
+    state = state.copyWith(
+      backUploaded: true,
+      cnicBackImageUrl: VerificationAssets.mockCnicBackUrl,
+      clearError: true,
+    );
+    await _persistProgress(step: VerificationLocalStep.upload);
+  }
+
+  Future<void> restoreSavedProgress(VerificationSavedProgress? saved) async {
+    if (saved == null) return;
+
+    state = state.copyWith(
+      frontUploaded: saved.frontUploaded,
+      backUploaded: saved.backUploaded,
+      cnicFrontImageUrl: saved.cnicFrontImageUrl,
+      cnicBackImageUrl: saved.cnicBackImageUrl,
+      extraction: saved.extraction,
+    );
+  }
+
+  Future<void> clearSavedProgress() => _progressStorage.clear();
+
+  Future<void> _persistProgress({
+    required VerificationLocalStep step,
+    CnicExtraction? extraction,
+  }) async {
+    await _progressStorage.save(
+      step: step,
+      extraction: extraction ?? state.extraction,
+      frontUploaded: state.frontUploaded,
+      backUploaded: state.backUploaded,
+      cnicFrontImageUrl: state.cnicFrontImageUrl,
+      cnicBackImageUrl: state.cnicBackImageUrl,
+    );
+  }
+
+  void resetUploads() {
+    _frontImage = null;
+    state = const VerificationFlowState();
+    unawaited(_progressStorage.clear());
+  }
 
   Future<void> runScanPipeline() async {
+    final frontImage = _frontImage;
+    if (frontImage == null) {
+      state = state.copyWith(
+        isScanning: false,
+        errorMessage: 'CNIC front image is missing. Please upload again.',
+      );
+      return;
+    }
+
     state = state.copyWith(
       isScanning: true,
       activeScanStep: ScanPipelineStep.uploadComplete,
       clearError: true,
     );
 
-    await Future<void>.delayed(const Duration(milliseconds: 600));
-    if (!mounted) return;
     state = state.copyWith(activeScanStep: ScanPipelineStep.detectingDocument);
-
-    await Future<void>.delayed(const Duration(milliseconds: 900));
     if (!mounted) return;
+
     state = state.copyWith(activeScanStep: ScanPipelineStep.extractingInformation);
 
-    final extraction = await _repository.simulateOcrExtraction();
-    if (!mounted) return;
+    try {
+      final extraction = await _ocrController.extractFromImage(frontImage);
+      if (!mounted) return;
 
-    state = state.copyWith(
-      isScanning: false,
-      activeScanStep: ScanPipelineStep.faceVerification,
-      extraction: extraction,
-    );
+      state = state.copyWith(
+        isScanning: false,
+        activeScanStep: ScanPipelineStep.faceVerification,
+        extraction: extraction,
+      );
+      await _persistProgress(
+        step: VerificationLocalStep.ocrCompleted,
+        extraction: extraction,
+      );
+    } on VerificationFailure catch (error) {
+      if (!mounted) return;
+      state = state.copyWith(
+        isScanning: false,
+        errorMessage: error.message,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      state = state.copyWith(
+        isScanning: false,
+        errorMessage: LocalOcrRepositoryImpl.ocrReadFailureMessage,
+      );
+    }
   }
 
   void updateExtraction(CnicExtraction extraction) {
     state = state.copyWith(extraction: extraction);
+    unawaited(
+      _persistProgress(
+        step: VerificationLocalStep.ocrCompleted,
+        extraction: extraction,
+      ),
+    );
   }
 
   Future<bool> submitForReview() async {
@@ -134,6 +234,10 @@ class VerificationFlowController extends StateNotifier<VerificationFlowState> {
     try {
       await _repository.submitForAdminReview(extraction);
       state = state.copyWith(isSubmitting: false);
+      await _persistProgress(
+        step: VerificationLocalStep.facePending,
+        extraction: extraction,
+      );
       return true;
     } catch (_) {
       state = state.copyWith(
@@ -167,6 +271,7 @@ class VerificationFlowController extends StateNotifier<VerificationFlowState> {
         ),
       );
       state = state.copyWith(isSubmitting: false);
+      await _progressStorage.clear();
       return status;
     } on VerificationFailure catch (error) {
       state = state.copyWith(
@@ -186,5 +291,9 @@ class VerificationFlowController extends StateNotifier<VerificationFlowState> {
 
 final verificationFlowControllerProvider =
     StateNotifierProvider<VerificationFlowController, VerificationFlowState>(
-  (ref) => VerificationFlowController(ref.watch(verificationRepositoryProvider)),
+  (ref) => VerificationFlowController(
+    ref.watch(verificationRepositoryProvider),
+    ref.watch(ocrControllerProvider),
+    ref.watch(verificationProgressStorageProvider),
+  ),
 );

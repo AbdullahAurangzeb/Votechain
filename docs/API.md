@@ -178,6 +178,54 @@ Authorization: Bearer <access_token>
 
 ## Verification
 
+### `POST /api/v1/verification/extract`
+
+Extracts CNIC fields from an uploaded image via the AI OCR service. **Authenticated users only.**
+
+**Headers**
+
+```
+Authorization: Bearer <access_token>
+Content-Type: multipart/form-data
+```
+
+**Body (multipart)**
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `image` | file | yes | CNIC image (JPEG, PNG, WebP, or PDF) |
+
+**Response `200`**
+
+```json
+{
+  "success": true,
+  "message": "CNIC extracted successfully",
+  "data": {
+    "rawText": ["PAKISTAN", "NATIONAL IDENTITY CARD", "..."],
+    "parsed": {
+      "name": "Arslan Khalid",
+      "cnic": "35202-1234567-1",
+      "dateOfBirth": "15 March 1998",
+      "gender": "Male",
+      "fatherName": "Muhammad Khalid"
+    }
+  },
+  "errors": null
+}
+```
+
+**Errors**
+
+| Status | Condition |
+|--------|-----------|
+| `400` | Missing image or unsupported file type |
+| `401` | Missing, invalid, or expired token |
+| `502` | OCR service returned an unsuccessful result |
+| `503` | Backend unable to reach AI service |
+
+---
+
 ### `POST /api/v1/verification/submit`
 
 Submits completed identity verification after face registration. **Authenticated users only.**

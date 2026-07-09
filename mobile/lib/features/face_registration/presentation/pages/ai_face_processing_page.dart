@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/widgets/votechain_form_error.dart';
+import '../../../../shared/widgets/votechain_page_header.dart';
 import '../../../../shared/widgets/votechain_primary_button.dart';
 import '../../../../shared/widgets/votechain_secondary_button.dart';
 import '../../../../theme/app_colors.dart';
@@ -53,6 +54,10 @@ class _AiFaceProcessingPageState extends ConsumerState<AiFaceProcessingPage> {
 
     return Scaffold(
       backgroundColor: AppColors.surfaceContainerLowest,
+      appBar: VoteChainAppBar(
+        showBack: true,
+        onBack: () => context.go(FaceRegistrationRoutes.register),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(

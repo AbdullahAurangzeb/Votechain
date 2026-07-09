@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../shared/widgets/votechain_page_header.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../domain/entities/verification_phase.dart';
@@ -11,7 +12,7 @@ import '../providers/verification_providers.dart';
 import '../verification_routes.dart';
 import '../widgets/cnic_scan_visual.dart';
 
-/// AI scanning animation — auto-advances to review when mock OCR completes.
+/// AI scanning animation — auto-advances to review when OCR completes.
 class AiScanningPage extends ConsumerStatefulWidget {
   const AiScanningPage({super.key});
 
@@ -30,9 +31,11 @@ class _AiScanningPageState extends ConsumerState<AiScanningPage> {
     final controller = ref.read(verificationFlowControllerProvider.notifier);
     await controller.runScanPipeline();
     if (!mounted) return;
-    final extraction = ref.read(verificationFlowControllerProvider).extraction;
-    if (extraction != null) {
+    final flowState = ref.read(verificationFlowControllerProvider);
+    if (flowState.extraction != null) {
       context.go(VerificationRoutes.review);
+    } else if (flowState.errorMessage != null) {
+      context.go(VerificationRoutes.uploadCnic);
     }
   }
 
@@ -51,6 +54,10 @@ class _AiScanningPageState extends ConsumerState<AiScanningPage> {
 
     return Scaffold(
       backgroundColor: AppColors.surfaceContainerLowest,
+      appBar: VoteChainAppBar(
+        showBack: true,
+        onBack: () => context.go(VerificationRoutes.uploadCnic),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(

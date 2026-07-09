@@ -9,9 +9,9 @@ import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_icons.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../data/auth_assets.dart';
-import '../auth_navigation.dart';
 import '../auth_routes.dart';
 import '../../../../shared/widgets/votechain_background.dart';
+import '../../../verification/presentation/verification_restore_navigation.dart';
 import '../providers/app_bootstrap_provider.dart';
 import '../providers/auth_controllers.dart';
 import '../widgets/auth_splash_status.dart';
@@ -43,7 +43,11 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
     if (splashState.status == SplashStatus.navigateAuthenticated &&
         splashState.user != null) {
-      navigateAfterAuthentication(router, splashState.user!);
+      await navigateWithVerificationRestore(
+        ref,
+        router,
+        splashState.user!,
+      );
       return;
     }
 

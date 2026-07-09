@@ -17,7 +17,7 @@ import '../../../../shared/widgets/votechain_text_field.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_icons.dart';
 import '../../../../theme/app_spacing.dart';
-import '../auth_navigation.dart';
+import '../../../verification/presentation/verification_restore_navigation.dart';
 import '../auth_routes.dart';
 import '../providers/auth_controllers.dart';
 
@@ -110,7 +110,11 @@ class RegisterPage extends ConsumerWidget {
                 if (ok && context.mounted) {
                   final user = ref.read(registerControllerProvider).user;
                   if (user != null) {
-                    navigateAfterAuthentication(GoRouter.of(context), user);
+                    await navigateWithVerificationRestore(
+                      ref,
+                      GoRouter.of(context),
+                      user,
+                    );
                   }
                 }
               },

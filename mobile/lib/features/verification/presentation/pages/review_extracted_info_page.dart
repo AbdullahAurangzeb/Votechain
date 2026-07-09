@@ -19,7 +19,7 @@ import '../../../verification/presentation/verification_routes.dart';
 import '../../../face_registration/presentation/face_registration_routes.dart';
 import '../widgets/verification_step_header.dart';
 
-/// Review OCR-extracted CNIC fields before admin submission (mock).
+/// Review OCR-extracted CNIC fields before admin submission.
 class ReviewExtractedInfoPage extends ConsumerWidget {
   const ReviewExtractedInfoPage({super.key});
 
@@ -177,7 +177,14 @@ class ReviewExtractedInfoPage extends ConsumerWidget {
                                     child: VoteChainReadOnlyField(
                                       label: 'Date of Birth',
                                       value: extraction.dateOfBirth,
-                                      showEdit: false,
+                                      onEdit: () => _showEditDialog(
+                                        context,
+                                        ref,
+                                        extraction,
+                                        'Date of Birth',
+                                        extraction.dateOfBirth,
+                                        (v) => extraction.copyWith(dateOfBirth: v),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: AppSpacing.lg),
@@ -185,7 +192,14 @@ class ReviewExtractedInfoPage extends ConsumerWidget {
                                     child: VoteChainReadOnlyField(
                                       label: 'Gender',
                                       value: extraction.gender,
-                                      showEdit: false,
+                                      onEdit: () => _showEditDialog(
+                                        context,
+                                        ref,
+                                        extraction,
+                                        'Gender',
+                                        extraction.gender,
+                                        (v) => extraction.copyWith(gender: v),
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -195,9 +209,16 @@ class ReviewExtractedInfoPage extends ConsumerWidget {
                                 children: [
                                   Expanded(
                                     child: VoteChainReadOnlyField(
-                                      label: 'Nationality',
-                                      value: extraction.nationality,
-                                      showEdit: false,
+                                      label: "Father's/Husband's Name",
+                                      value: extraction.fatherName,
+                                      onEdit: () => _showEditDialog(
+                                        context,
+                                        ref,
+                                        extraction,
+                                        "Father's/Husband's Name",
+                                        extraction.fatherName,
+                                        (v) => extraction.copyWith(fatherName: v),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: AppSpacing.lg),
@@ -205,7 +226,14 @@ class ReviewExtractedInfoPage extends ConsumerWidget {
                                     child: VoteChainReadOnlyField(
                                       label: 'Issue Date',
                                       value: extraction.issueDate,
-                                      showEdit: false,
+                                      onEdit: () => _showEditDialog(
+                                        context,
+                                        ref,
+                                        extraction,
+                                        'Issue Date',
+                                        extraction.issueDate,
+                                        (v) => extraction.copyWith(issueDate: v),
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -322,7 +350,7 @@ class ReviewExtractedInfoPage extends ConsumerWidget {
         ],
       ),
     );
-    if (result != null && result.isNotEmpty) {
+    if (result != null) {
       ref
           .read(verificationFlowControllerProvider.notifier)
           .updateExtraction(apply(result));

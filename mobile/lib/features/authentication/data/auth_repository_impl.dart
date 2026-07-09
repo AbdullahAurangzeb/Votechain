@@ -31,9 +31,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final user = await _remoteDataSource.getCurrentUser();
       return user;
-    } catch (error) {
+    } catch (error, stackTrace) {
       await _tokenStorage.clearAccessToken();
-      throw AuthRemoteDataSource.mapException(error);
+      throw AuthRemoteDataSource.mapException(error, stackTrace);
     }
   }
 
@@ -54,8 +54,8 @@ class AuthRepositoryImpl implements AuthRepository {
       await _tokenStorage.saveAccessToken(loginResult.token);
 
       return loginResult.user;
-    } catch (error) {
-      throw AuthRemoteDataSource.mapException(error);
+    } catch (error, stackTrace) {
+      throw AuthRemoteDataSource.mapException(error, stackTrace);
     }
   }
 
@@ -63,8 +63,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthUser> getCurrentUser() async {
     try {
       return await _remoteDataSource.getCurrentUser();
-    } catch (error) {
-      throw AuthRemoteDataSource.mapException(error);
+    } catch (error, stackTrace) {
+      throw AuthRemoteDataSource.mapException(error, stackTrace);
     }
   }
 

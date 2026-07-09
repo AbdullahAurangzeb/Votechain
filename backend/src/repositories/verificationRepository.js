@@ -5,6 +5,20 @@ const { User } = require('../models/User');
  */
 class VerificationRepository {
   /**
+   * Normalizes CNIC to `XXXXX-XXXXXXX-X` for consistent comparisons.
+   * @param {string} cnic
+   * @returns {string}
+   */
+  normalizeCnic(cnic) {
+    const digits = String(cnic).replace(/\D/g, '');
+    if (digits.length !== 13) {
+      return String(cnic).trim();
+    }
+
+    return `${digits.slice(0, 5)}-${digits.slice(5, 12)}-${digits.slice(12)}`;
+  }
+
+  /**
    * @param {string} userId
    * @returns {Promise<import('mongoose').Document|null>}
    */
@@ -34,17 +48,24 @@ class VerificationRepository {
   }
 
   /**
+   * Returns true when another account already owns [cnic].
    * @param {string} cnic
    * @param {string} excludeUserId
    * @returns {Promise<boolean>}
    */
   async cnicExistsForOtherUser(cnic, excludeUserId) {
-    const count = await User.countDocuments({
-      cnic,
-      _id: { $ne: excludeUserId },
-    });
+    const normalized = this.normalizeCnic(cnic);
+    const users = await User.find({
+      cnic: { $exists: true, $ne: null },
+    }).select('cnic _id');
 
-    return count > 0;
+    return users.some((user) => {
+      if (user._id.toString() === String(excludeUserId)) {
+        return false;
+      }
+
+      return this.normalizeCnic(user.cnic) === normalized;
+    });
   }
 }
 

@@ -16,7 +16,7 @@ import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_icons.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../data/auth_assets.dart';
-import '../auth_navigation.dart';
+import '../../../verification/presentation/verification_restore_navigation.dart';
 import '../auth_routes.dart';
 import '../providers/auth_controllers.dart';
 
@@ -140,7 +140,8 @@ class LoginPage extends ConsumerWidget {
                           if (ok && context.mounted) {
                             final user = ref.read(loginControllerProvider).user;
                             if (user != null) {
-                              navigateAfterAuthentication(
+                              await navigateWithVerificationRestore(
+                                ref,
                                 GoRouter.of(context),
                                 user,
                               );

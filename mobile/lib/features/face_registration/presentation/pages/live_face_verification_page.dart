@@ -34,6 +34,8 @@ class LiveFaceVerificationPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.surfaceContainerLowest,
       appBar: VoteChainAppBar(
+        showBack: true,
+        onBack: () => context.go(FaceRegistrationRoutes.register),
         centerTitle: 'VoteChain | Identity Verification',
       ),
       body: SafeArea(
