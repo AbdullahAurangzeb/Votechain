@@ -28,13 +28,27 @@ class LocalOcrRepositoryImpl implements OcrRepository {
   @override
   Future<CnicExtraction> extractFromImage(XFile image) async {
     try {
-      final rawLines = await _ocrService.extractLines(image);
-      if (rawLines.isEmpty) {
+      final document = await _ocrService.recognize(image);
+      if (document.normalizedLines.isEmpty && document.rawLines.isEmpty) {
         throw const VerificationFailure(ocrReadFailureMessage);
       }
 
-      final OcrResult ocrResult = _parser.parse(rawLines);
-      return _mapper.toCnicExtraction(ocrResult);
+      final OcrResult ocrResult = _parser.parseDocument(document);
+      final extraction = _mapper.toCnicExtraction(ocrResult);
+
+      final hasAnyField = extraction.fullName.isNotEmpty ||
+          extraction.cnicNumber.isNotEmpty ||
+          extraction.dateOfBirth.isNotEmpty ||
+          extraction.gender.isNotEmpty ||
+          extraction.fatherName.isNotEmpty ||
+          extraction.issueDate.isNotEmpty ||
+          extraction.expiryDate.isNotEmpty;
+
+      if (!hasAnyField) {
+        throw const VerificationFailure(ocrReadFailureMessage);
+      }
+
+      return extraction;
     } on VerificationFailure {
       rethrow;
     } catch (_) {

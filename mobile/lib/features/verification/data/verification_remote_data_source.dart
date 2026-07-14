@@ -102,22 +102,36 @@ class VerificationRemoteDataSource {
   }
 
   static String _messageFromBody(Map<String, dynamic> body) {
+    final fieldMessage = _firstFieldErrorMessage(body['errors']);
+    if (fieldMessage != null) {
+      return fieldMessage;
+    }
+
     final message = body['message'];
     if (message is String && message.isNotEmpty) {
       return message;
     }
 
-    final errors = body['errors'];
-    if (errors is List && errors.isNotEmpty) {
-      final first = errors.first;
-      if (first is Map && first['msg'] is String) {
-        return first['msg'] as String;
-      }
-      if (first is String) {
-        return first;
+    return 'Request failed. Please try again.';
+  }
+
+  static String? _firstFieldErrorMessage(Object? errors) {
+    if (errors is! List || errors.isEmpty) {
+      return null;
+    }
+
+    final first = errors.first;
+    if (first is Map) {
+      final message = first['message'] ?? first['msg'];
+      if (message is String && message.isNotEmpty) {
+        return message;
       }
     }
 
-    return 'Request failed. Please try again.';
+    if (first is String && first.isNotEmpty) {
+      return first;
+    }
+
+    return null;
   }
 }

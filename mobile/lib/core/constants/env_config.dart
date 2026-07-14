@@ -14,7 +14,7 @@ abstract final class EnvConfig {
   /// PC LAN IPv4 used for physical Android when [API_BASE_URL] is not set.
   static const String apiLanHost = String.fromEnvironment(
     'API_LAN_HOST',
-    defaultValue: '192.168.18.75',
+    defaultValue: '10.172.223.57',
   );
 
   /// Backend port shared by platform defaults.

@@ -42,6 +42,7 @@ class VerificationFlowState {
     this.isScanning = false,
     this.activeScanStep = ScanPipelineStep.uploadComplete,
     this.extraction,
+    this.manuallyEditedFields = const {},
     this.isSubmitting = false,
     this.errorMessage,
   });
@@ -53,6 +54,9 @@ class VerificationFlowState {
   final bool isScanning;
   final ScanPipelineStep activeScanStep;
   final CnicExtraction? extraction;
+
+  /// Field keys the user changed on review — never overwritten by later OCR.
+  final Set<String> manuallyEditedFields;
   final bool isSubmitting;
   final String? errorMessage;
 
@@ -71,6 +75,7 @@ class VerificationFlowState {
     bool? isScanning,
     ScanPipelineStep? activeScanStep,
     CnicExtraction? extraction,
+    Set<String>? manuallyEditedFields,
     bool? isSubmitting,
     String? errorMessage,
     bool clearError = false,
@@ -83,6 +88,8 @@ class VerificationFlowState {
       isScanning: isScanning ?? this.isScanning,
       activeScanStep: activeScanStep ?? this.activeScanStep,
       extraction: extraction ?? this.extraction,
+      manuallyEditedFields:
+          manuallyEditedFields ?? this.manuallyEditedFields,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
     );
@@ -101,6 +108,20 @@ class VerificationFlowController extends StateNotifier<VerificationFlowState> {
   final VerificationProgressStorage _progressStorage;
   final ImagePicker _imagePicker = ImagePicker();
   XFile? _frontImage;
+
+  /// Authenticated user that owns locally persisted verification progress.
+  String? _boundUserId;
+
+  /// Binds progress persistence to [userId] for the active session.
+  void bindUser(String userId) {
+    _boundUserId = userId;
+  }
+
+  /// Clears in-memory verification UI state without requiring a prior bind.
+  void resetSessionState() {
+    _frontImage = null;
+    state = const VerificationFlowState();
+  }
 
   Future<void> pickFrontImage(ImageSource source) async {
     final image = await _imagePicker.pickImage(
@@ -151,7 +172,13 @@ class VerificationFlowController extends StateNotifier<VerificationFlowState> {
     required VerificationLocalStep step,
     CnicExtraction? extraction,
   }) async {
+    final userId = _boundUserId;
+    if (userId == null || userId.isEmpty) {
+      return;
+    }
+
     await _progressStorage.save(
+      userId: userId,
       step: step,
       extraction: extraction ?? state.extraction,
       frontUploaded: state.frontUploaded,
@@ -162,8 +189,7 @@ class VerificationFlowController extends StateNotifier<VerificationFlowState> {
   }
 
   void resetUploads() {
-    _frontImage = null;
-    state = const VerificationFlowState();
+    resetSessionState();
     unawaited(_progressStorage.clear());
   }
 
@@ -192,14 +218,20 @@ class VerificationFlowController extends StateNotifier<VerificationFlowState> {
       final extraction = await _ocrController.extractFromImage(frontImage);
       if (!mounted) return;
 
+      final merged = _preserveManualEdits(
+        ocrExtraction: extraction,
+        previous: state.extraction,
+        editedFields: state.manuallyEditedFields,
+      );
+
       state = state.copyWith(
         isScanning: false,
         activeScanStep: ScanPipelineStep.faceVerification,
-        extraction: extraction,
+        extraction: merged,
       );
       await _persistProgress(
         step: VerificationLocalStep.ocrCompleted,
-        extraction: extraction,
+        extraction: merged,
       );
     } on VerificationFailure catch (error) {
       if (!mounted) return;
@@ -217,12 +249,70 @@ class VerificationFlowController extends StateNotifier<VerificationFlowState> {
   }
 
   void updateExtraction(CnicExtraction extraction) {
-    state = state.copyWith(extraction: extraction);
+    final previous = state.extraction;
+    final normalized = extraction.withNormalizedCnic();
+    final edited = Set<String>.from(state.manuallyEditedFields);
+    if (previous != null) {
+      if (previous.fullName != normalized.fullName) edited.add('fullName');
+      if (previous.fatherName != normalized.fatherName) {
+        edited.add('fatherName');
+      }
+      if (previous.cnicNumber != normalized.cnicNumber) {
+        edited.add('cnicNumber');
+      }
+      if (previous.dateOfBirth != normalized.dateOfBirth) {
+        edited.add('dateOfBirth');
+      }
+      if (previous.gender != normalized.gender) edited.add('gender');
+      if (previous.issueDate != normalized.issueDate) edited.add('issueDate');
+      if (previous.expiryDate != normalized.expiryDate) {
+        edited.add('expiryDate');
+      }
+    }
+
+    state = state.copyWith(
+      extraction: normalized,
+      manuallyEditedFields: edited,
+      clearError: true,
+    );
     unawaited(
       _persistProgress(
         step: VerificationLocalStep.ocrCompleted,
-        extraction: extraction,
+        extraction: normalized,
       ),
+    );
+  }
+
+  /// Keeps user-edited review fields when OCR runs again.
+  CnicExtraction _preserveManualEdits({
+    required CnicExtraction ocrExtraction,
+    required CnicExtraction? previous,
+    required Set<String> editedFields,
+  }) {
+    if (previous == null || editedFields.isEmpty) return ocrExtraction;
+
+    return ocrExtraction.copyWith(
+      fullName: editedFields.contains('fullName')
+          ? previous.fullName
+          : ocrExtraction.fullName,
+      fatherName: editedFields.contains('fatherName')
+          ? previous.fatherName
+          : ocrExtraction.fatherName,
+      cnicNumber: editedFields.contains('cnicNumber')
+          ? previous.cnicNumber
+          : ocrExtraction.cnicNumber,
+      dateOfBirth: editedFields.contains('dateOfBirth')
+          ? previous.dateOfBirth
+          : ocrExtraction.dateOfBirth,
+      gender: editedFields.contains('gender')
+          ? previous.gender
+          : ocrExtraction.gender,
+      issueDate: editedFields.contains('issueDate')
+          ? previous.issueDate
+          : ocrExtraction.issueDate,
+      expiryDate: editedFields.contains('expiryDate')
+          ? previous.expiryDate
+          : ocrExtraction.expiryDate,
     );
   }
 
@@ -230,13 +320,27 @@ class VerificationFlowController extends StateNotifier<VerificationFlowState> {
     final extraction = state.extraction;
     if (extraction == null) return false;
 
-    state = state.copyWith(isSubmitting: true, clearError: true);
+    final normalized = extraction.withNormalizedCnic();
+    if (!CnicExtraction.isValidCnic(normalized.cnicNumber)) {
+      state = state.copyWith(
+        extraction: normalized,
+        errorMessage:
+            'Enter a valid CNIC in the format 35202-1234567-1 before continuing.',
+      );
+      return false;
+    }
+
+    state = state.copyWith(
+      extraction: normalized,
+      isSubmitting: true,
+      clearError: true,
+    );
     try {
-      await _repository.submitForAdminReview(extraction);
+      await _repository.submitForAdminReview(normalized);
       state = state.copyWith(isSubmitting: false);
       await _persistProgress(
         step: VerificationLocalStep.facePending,
-        extraction: extraction,
+        extraction: normalized,
       );
       return true;
     } catch (_) {
@@ -261,11 +365,26 @@ class VerificationFlowController extends StateNotifier<VerificationFlowState> {
       return null;
     }
 
-    state = state.copyWith(isSubmitting: true, clearError: true);
+    final normalized = extraction.withNormalizedCnic();
+    if (!CnicExtraction.isValidCnic(normalized.cnicNumber)) {
+      state = state.copyWith(
+        extraction: normalized,
+        errorMessage:
+            'CNIC is missing or invalid. Go back and enter your CNIC '
+            '(35202-1234567-1) on the review screen.',
+      );
+      return null;
+    }
+
+    state = state.copyWith(
+      extraction: normalized,
+      isSubmitting: true,
+      clearError: true,
+    );
     try {
       final status = await _repository.submitVerification(
         VerificationSubmission(
-          cnicNumber: extraction.cnicNumber,
+          cnicNumber: normalized.cnicNumber,
           cnicFrontImageUrl: frontUrl,
           cnicBackImageUrl: backUrl,
         ),

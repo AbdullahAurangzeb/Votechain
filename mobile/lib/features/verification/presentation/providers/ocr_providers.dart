@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../data/cnic_image_preprocessor.dart';
 import '../../data/cnic_parser.dart';
 import '../../data/local_ocr_repository_impl.dart';
 import '../../data/mlkit_ocr_service.dart';
@@ -12,8 +13,14 @@ final cnicParserProvider = Provider<CnicParser>((_) => const CnicParser());
 final ocrResultMapperProvider =
     Provider<OcrResultMapper>((_) => const OcrResultMapper());
 
-final mlKitOcrServiceProvider =
-    Provider<MlKitOcrService>((_) => const MlKitOcrService());
+final cnicImagePreprocessorProvider =
+    Provider<CnicImagePreprocessor>((_) => const CnicImagePreprocessor());
+
+final mlKitOcrServiceProvider = Provider<MlKitOcrService>((ref) {
+  return MlKitOcrService(
+    preprocessor: ref.watch(cnicImagePreprocessorProvider),
+  );
+});
 
 final ocrRepositoryProvider = Provider<OcrRepository>((ref) {
   return LocalOcrRepositoryImpl(

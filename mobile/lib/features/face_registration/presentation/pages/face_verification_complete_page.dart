@@ -167,6 +167,14 @@ class FaceVerificationCompletePage extends ConsumerWidget {
                     },
                   ),
                   const SizedBox(height: AppSpacing.md),
+                  if (ref.watch(verificationFlowControllerProvider).errorMessage !=
+                      null) ...[
+                    VoteChainSecondaryButton(
+                      label: 'Fix CNIC Details',
+                      onPressed: () => context.go(VerificationRoutes.review),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                  ],
                   VoteChainSecondaryButton(
                     label: 'Register Face Again',
                     onPressed: () =>

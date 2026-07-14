@@ -12,6 +12,8 @@ class CnicExtraction {
     required this.ocrConfidence,
   });
 
+  static final RegExp _dashedCnicPattern = RegExp(r'^\d{5}-\d{7}-\d$');
+
   final String fullName;
   final String fatherName;
   final String cnicNumber;
@@ -21,6 +23,28 @@ class CnicExtraction {
   final String issueDate;
   final String expiryDate;
   final double ocrConfidence;
+
+  /// Normalizes digit CNIC values to `XXXXX-XXXXXXX-X`.
+  static String normalizeCnic(String value) {
+    final digits = value.replaceAll(RegExp(r'\D'), '');
+    if (digits.length != 13) {
+      return value.trim();
+    }
+
+    return '${digits.substring(0, 5)}-'
+        '${digits.substring(5, 12)}-'
+        '${digits.substring(12)}';
+  }
+
+  /// Returns true when [value] is a valid Pakistani CNIC number.
+  static bool isValidCnic(String value) {
+    return _dashedCnicPattern.hasMatch(normalizeCnic(value));
+  }
+
+  /// Copy with [cnicNumber] normalized to dashed format when possible.
+  CnicExtraction withNormalizedCnic() {
+    return copyWith(cnicNumber: normalizeCnic(cnicNumber));
+  }
 
   CnicExtraction copyWith({
     String? fullName,

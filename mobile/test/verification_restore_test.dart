@@ -8,8 +8,8 @@ import 'package:votechain_mobile/features/verification/domain/entities/verificat
 import 'package:votechain_mobile/features/verification/presentation/verification_routes.dart';
 
 void main() {
-  const user = AuthUser(
-    id: '1',
+  const newUser = AuthUser(
+    id: 'user-new',
     fullName: 'Test User',
     email: 'test@example.com',
     phone: '03001234567',
@@ -19,10 +19,39 @@ void main() {
     faceRegistered: false,
   );
 
-  test('routes ocr completed local progress to review', () {
+  test('new not_started user with no progress goes to Upload CNIC', () {
+    final route = resolvePostAuthRoute(newUser);
+    expect(route, VerificationRoutes.uploadCnic);
+  });
+
+  test('new not_started user ignores another users facePending progress', () {
     final route = resolvePostAuthRoute(
-      user,
+      newUser,
       savedProgress: const VerificationSavedProgress(
+        userId: 'someone-else',
+        step: VerificationLocalStep.facePending,
+      ),
+    );
+
+    expect(route, VerificationRoutes.uploadCnic);
+  });
+
+  test('new not_started user ignores legacy unscoped progress', () {
+    final route = resolvePostAuthRoute(
+      newUser,
+      savedProgress: const VerificationSavedProgress(
+        step: VerificationLocalStep.facePending,
+      ),
+    );
+
+    expect(route, VerificationRoutes.uploadCnic);
+  });
+
+  test('routes ocr completed local progress to review for same user', () {
+    final route = resolvePostAuthRoute(
+      newUser,
+      savedProgress: const VerificationSavedProgress(
+        userId: 'user-new',
         step: VerificationLocalStep.ocrCompleted,
       ),
     );
@@ -30,15 +59,50 @@ void main() {
     expect(route, VerificationRoutes.review);
   });
 
-  test('routes face pending local progress to face registration', () {
+  test('routes face pending local progress to face registration for same user',
+      () {
     final route = resolvePostAuthRoute(
-      user,
+      newUser,
       savedProgress: const VerificationSavedProgress(
+        userId: 'user-new',
         step: VerificationLocalStep.facePending,
       ),
     );
 
     expect(route, FaceRegistrationRoutes.register);
+  });
+
+  test('routes upload local progress to Upload CNIC for same user', () {
+    final route = resolvePostAuthRoute(
+      newUser,
+      savedProgress: const VerificationSavedProgress(
+        userId: 'user-new',
+        step: VerificationLocalStep.upload,
+      ),
+    );
+
+    expect(route, VerificationRoutes.uploadCnic);
+  });
+
+  test('backend pending always goes to Verification Pending', () {
+    final route = resolvePostAuthRoute(
+      const AuthUser(
+        id: '1',
+        fullName: 'Test User',
+        email: 'test@example.com',
+        phone: '03001234567',
+        role: UserRole.voter,
+        approvalStatus: ApprovalStatus.pending,
+        verificationStatus: VerificationStatus.pending,
+        faceRegistered: true,
+      ),
+      savedProgress: const VerificationSavedProgress(
+        userId: '1',
+        step: VerificationLocalStep.facePending,
+      ),
+    );
+
+    expect(route, VerificationRoutes.pending);
   });
 
   test('routes approved verified users to dashboard', () {

@@ -10,13 +10,15 @@ class OcrResultMapper {
     final cnic = result.cnic?.trim() ?? '';
     final dateOfBirth = result.dateOfBirth?.trim() ?? '';
     final gender = result.gender?.trim() ?? '';
-    final fatherName = result.fatherName?.trim() ?? '';
+    final fatherOrHusband = (result.fatherName?.trim().isNotEmpty ?? false)
+        ? result.fatherName!.trim()
+        : (result.husbandName?.trim() ?? '');
     final issueDate = result.issueDate?.trim() ?? '';
     final expiryDate = result.expiryDate?.trim() ?? '';
 
     return CnicExtraction(
       fullName: name,
-      fatherName: fatherName,
+      fatherName: fatherOrHusband,
       cnicNumber: cnic,
       dateOfBirth: dateOfBirth,
       gender: gender,
@@ -28,7 +30,7 @@ class OcrResultMapper {
         cnic: cnic,
         dateOfBirth: dateOfBirth,
         gender: gender,
-        fatherName: fatherName,
+        fatherName: fatherOrHusband,
         issueDate: issueDate,
         expiryDate: expiryDate,
       ),

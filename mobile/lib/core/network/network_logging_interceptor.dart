@@ -107,7 +107,7 @@ abstract final class NetworkDebugLogger {
       '  API_LAN_HOST dart-define: ${EnvConfig.apiLanHost}\n'
       '  API_PORT dart-define: ${EnvConfig.apiPort}\n'
       '  EnvConfig.apiBaseUrl: ${EnvConfig.apiBaseUrl}\n'
-      '  Expected physical Android: http://192.168.18.75:5000\n'
+      '  Expected physical Android: http://10.172.223.57:5000\n'
       '  URL override active: ${EnvConfig.hasUrlOverride}',
     );
 
@@ -116,7 +116,7 @@ abstract final class NetworkDebugLogger {
       debugPrint(
         '[VoteChain][Network][Startup][WARNING] '
         'Android is using localhost — requests will not reach your PC. '
-        'Rebuild with --dart-define=API_BASE_URL=http://192.168.18.75:5000 '
+        'Rebuild with --dart-define=API_BASE_URL=http://10.172.223.57:5000 '
         'or remove the localhost override.',
       );
     }

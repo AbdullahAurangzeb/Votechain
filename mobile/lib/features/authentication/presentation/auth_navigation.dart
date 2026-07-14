@@ -17,6 +17,9 @@ void navigateAfterAuthentication(
 }
 
 /// Resolves the post-authentication destination for [user].
+///
+/// Backend [VerificationStatus] is the source of truth. Local progress may only
+/// advance a [VerificationStatus.notStarted] user within the CNIC → face flow.
 String resolvePostAuthRoute(
   AuthUser user, {
   VerificationSavedProgress? savedProgress,
@@ -34,12 +37,18 @@ String resolvePostAuthRoute(
     case VerificationStatus.verified:
       return VerificationRoutes.pending;
     case VerificationStatus.notStarted:
-      return _resolveLocalProgressRoute(savedProgress);
+      return _resolveLocalProgressRoute(user, savedProgress);
   }
 }
 
-String _resolveLocalProgressRoute(VerificationSavedProgress? savedProgress) {
-  if (savedProgress == null) {
+String _resolveLocalProgressRoute(
+  AuthUser user,
+  VerificationSavedProgress? savedProgress,
+) {
+  // Never apply another user's (or legacy unscoped) progress.
+  if (savedProgress == null ||
+      savedProgress.userId == null ||
+      savedProgress.userId != user.id) {
     return VerificationRoutes.uploadCnic;
   }
 
