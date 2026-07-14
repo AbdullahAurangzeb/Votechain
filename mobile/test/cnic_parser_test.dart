@@ -276,5 +276,48 @@ void main() {
       expect(extraction.expiryDate, isEmpty);
       expect(extraction.fatherName, isEmpty);
     });
+
+    test('collapses duplicated full name and father name phrases', () {
+      final result = parser.parse([
+        'Name',
+        'Ayesha Khan',
+        'Ayesha Khan',
+        'Father Name',
+        'Khalid Mehmood Kh N',
+        'Khalid Mehmood Kh N',
+        '35202-1234567-1',
+        'Gender',
+        'Female',
+      ]);
+
+      expect(result.name, 'Ayesha Khan');
+      expect(result.fatherName, 'Khalid Mehmood Kh N');
+      expect(result.gender, 'Female');
+      expect(result.cnic, '35202-1234567-1');
+    });
+
+    test('collapses duplicated phrase embedded in a single OCR line', () {
+      final result = parser.parse([
+        'NAME AYSHA KHAN AYSHA KHAN',
+        'FATHER NAME BABAR ALI BABAR ALI',
+        '35201-9999999-9',
+      ]);
+
+      expect(result.name, 'Aysha Khan');
+      expect(result.fatherName, 'Babar Ali');
+    });
+
+    test('preserves legitimate repeated words inside names', () {
+      final result = parser.parse([
+        'Name',
+        'Abdul Abdul Rahman',
+        'Father Name',
+        'Muhammad Muhammad Ali',
+        '35201-8888888-8',
+      ]);
+
+      expect(result.name, 'Abdul Abdul Rahman');
+      expect(result.fatherName, 'Muhammad Muhammad Ali');
+    });
   });
 }

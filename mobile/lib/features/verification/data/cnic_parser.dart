@@ -157,24 +157,30 @@ class CnicParser {
     final rejected = <String>[];
 
     final cnic = _extractCnic(lines, positioned, regexMatches, rejected);
-    final fatherName = _extractLabeledMultiLineName(
-      lines,
-      positioned,
-      _fatherLabelPattern,
-      rejected,
+    final fatherName = _finalizeName(
+      _extractLabeledMultiLineName(
+        lines,
+        positioned,
+        _fatherLabelPattern,
+        rejected,
+      ),
     );
-    final husbandName = _extractLabeledMultiLineName(
-      lines,
-      positioned,
-      _husbandLabelPattern,
-      rejected,
+    final husbandName = _finalizeName(
+      _extractLabeledMultiLineName(
+        lines,
+        positioned,
+        _husbandLabelPattern,
+        rejected,
+      ),
     );
-    final name = _extractName(
-      lines,
-      positioned,
-      fatherName: fatherName,
-      husbandName: husbandName,
-      rejected: rejected,
+    final name = _finalizeName(
+      _extractName(
+        lines,
+        positioned,
+        fatherName: fatherName,
+        husbandName: husbandName,
+        rejected: rejected,
+      ),
     );
 
     final labeledDob =
@@ -488,6 +494,11 @@ class CnicParser {
           if (next.replaceAll(RegExp(r'[^A-Z]'), '').length > 8) break;
           continue;
         }
+        // OCR often repeats the full name on the next line — skip exact repeats.
+        if (_isDuplicateNamePart(parts, cleaned)) {
+          rejected.add('name-fragment:duplicate=$cleaned');
+          continue;
+        }
         parts.add(cleaned);
         if (_joinedNameWordCount(parts) >= 4) break;
       }
@@ -496,6 +507,55 @@ class CnicParser {
       return _joinNameParts(parts);
     }
     return null;
+  }
+
+  /// True when [candidate] repeats what is already collected (full phrase).
+  bool _isDuplicateNamePart(List<String> parts, String candidate) {
+    if (parts.isEmpty) return false;
+    final candidateUpper = candidate.toUpperCase();
+    if (parts.any((part) => part.toUpperCase() == candidateUpper)) {
+      return true;
+    }
+    final joined = _joinNameParts(parts).toUpperCase();
+    return joined == candidateUpper;
+  }
+
+  /// Collapses OCR-duplicated full name phrases while keeping real repeated words.
+  ///
+  /// `"Ayesha Khan Ayesha Khan"` → `"Ayesha Khan"`
+  /// `"Abdul Abdul Rahman"` stays unchanged (odd length / unequal halves).
+  String? _finalizeName(String? name) {
+    if (name == null) return null;
+    final collapsed = _collapseRepeatedNamePhrase(name);
+    return collapsed.isEmpty ? null : collapsed;
+  }
+
+  String _collapseRepeatedNamePhrase(String name) {
+    final words = name
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
+    if (words.length < 2) return name;
+
+    // Keep collapsing while the sequence is exactly phrase + phrase.
+    while (words.length >= 2 && words.length.isEven) {
+      final mid = words.length ~/ 2;
+      final first = words.sublist(0, mid);
+      final second = words.sublist(mid);
+      final equal = List.generate(
+        mid,
+        (i) => first[i].toUpperCase() == second[i].toUpperCase(),
+      ).every((same) => same);
+      if (!equal) break;
+      words.removeRange(mid, words.length);
+    }
+
+    return words
+        .map((part) {
+          final upper = part.toUpperCase();
+          return '${upper[0]}${upper.substring(1).toLowerCase()}';
+        })
+        .join(' ');
   }
 
   String _joinNameParts(List<String> parts) {
@@ -509,7 +569,7 @@ class CnicParser {
         joined = '$joined $next';
       }
     }
-    return joined
+    final titled = joined
         .split(RegExp(r'\s+'))
         .where((w) => w.isNotEmpty)
         .map((part) {
@@ -517,6 +577,7 @@ class CnicParser {
           return '${upper[0]}${upper.substring(1).toLowerCase()}';
         })
         .join(' ');
+    return _collapseRepeatedNamePhrase(titled);
   }
 
   bool _shouldConcatenateNameFragments(String left, String right) {
